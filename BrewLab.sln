@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrewLab.Models", "BrewLab.M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrewLab.Repository", "Repository\BrewLab.Repository.csproj", "{1AAE0527-6533-466E-8B7F-54842E132076}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrewLab.Common", "BrewLab.Common\BrewLab.Common.csproj", "{0533473C-A362-4E3B-AC0E-2EAF43F340EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{1AAE0527-6533-466E-8B7F-54842E132076}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1AAE0527-6533-466E-8B7F-54842E132076}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1AAE0527-6533-466E-8B7F-54842E132076}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0533473C-A362-4E3B-AC0E-2EAF43F340EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0533473C-A362-4E3B-AC0E-2EAF43F340EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0533473C-A362-4E3B-AC0E-2EAF43F340EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0533473C-A362-4E3B-AC0E-2EAF43F340EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
