@@ -3,6 +3,7 @@ using System;
 using BrewLab.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BrewLab.Models.Migrations
 {
     [DbContext(typeof(BrewLabContext))]
-    partial class BrewLabContextModelSnapshot : ModelSnapshot
+    [Migration("20240726182251_ExperimenterLoggedAndVirtualDeletable")]
+    partial class ExperimenterLoggedAndVirtualDeletable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
