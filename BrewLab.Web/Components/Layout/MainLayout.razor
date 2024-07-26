@@ -7,7 +7,7 @@
 
 <MudLayout>
     <MudAppBar Elevation="2">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => _drawerOpen = !_drawerOpen)" />
         <MudText Typo="Typo.h5" Class="ml-3">BrewLab</MudText>
         <MudSpacer />
         <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
@@ -18,7 +18,7 @@
     </MudDrawer>
 
     <MudMainContent>
-        <div class="ml-3 mt-3">
+        <div class="ma-3">
             @Body
         </div>
     </MudMainContent>
@@ -26,9 +26,4 @@
 
 @code {
     bool _drawerOpen = false;
-
-    void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
 }
