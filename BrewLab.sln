@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrewLab.API", "BrewLab\BrewLab.API.csproj", "{2DF2E3C5-6ACE-4EB3-8128-8EB90057C7DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrewLab.Models", "BrewLab.Models\BrewLab.Models.csproj", "{76335567-93E6-4834-A300-569F5F6853DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrewLab.Models", "BrewLab.Models\BrewLab.Models.csproj", "{76335567-93E6-4834-A300-569F5F6853DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrewLab.Repository", "Repository\BrewLab.Repository.csproj", "{1AAE0527-6533-466E-8B7F-54842E132076}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrewLab.Repository", "Repository\BrewLab.Repository.csproj", "{1AAE0527-6533-466E-8B7F-54842E132076}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrewLab.Common", "BrewLab.Common\BrewLab.Common.csproj", "{0533473C-A362-4E3B-AC0E-2EAF43F340EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrewLab.Common", "BrewLab.Common\BrewLab.Common.csproj", "{0533473C-A362-4E3B-AC0E-2EAF43F340EA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrewLab.Web", "BrewLab.Web\BrewLab.Web.csproj", "{C3773677-BA6E-4AC2-B5D5-01241A241FE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2DF2E3C5-6ACE-4EB3-8128-8EB90057C7DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2DF2E3C5-6ACE-4EB3-8128-8EB90057C7DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2DF2E3C5-6ACE-4EB3-8128-8EB90057C7DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2DF2E3C5-6ACE-4EB3-8128-8EB90057C7DA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{76335567-93E6-4834-A300-569F5F6853DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{76335567-93E6-4834-A300-569F5F6853DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76335567-93E6-4834-A300-569F5F6853DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +29,10 @@ Global
 		{0533473C-A362-4E3B-AC0E-2EAF43F340EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0533473C-A362-4E3B-AC0E-2EAF43F340EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0533473C-A362-4E3B-AC0E-2EAF43F340EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3773677-BA6E-4AC2-B5D5-01241A241FE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3773677-BA6E-4AC2-B5D5-01241A241FE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3773677-BA6E-4AC2-B5D5-01241A241FE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3773677-BA6E-4AC2-B5D5-01241A241FE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
