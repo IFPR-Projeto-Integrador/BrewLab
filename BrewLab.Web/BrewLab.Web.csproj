@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BrewLab.Common\BrewLab.Common.csproj" />
     <ProjectReference Include="..\BrewLab.Models\BrewLab.Models.csproj" />
     <ProjectReference Include="..\Repository\BrewLab.Repository.csproj" />
   </ItemGroup>
