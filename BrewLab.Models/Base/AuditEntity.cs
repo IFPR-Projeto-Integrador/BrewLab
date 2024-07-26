@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace BrewLab.Models.Base;
-public class AuditEntity
+public class AuditEntity : ILoggedEntity, IVirtualDeleteable
 {
     [Required]
     public DateTime? CreatedAt { get; set; } = DateTime.Now;

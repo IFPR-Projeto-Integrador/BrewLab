@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace BrewLab.Models.Models;
-public class Experiment : AuditEntity, IBrewLabModel
+public class Experiment : AuditEntity, IBrewLabModel<int>
 {
     [Key]
     public int Id { get; set; }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BrewLab.Models.Base;
-public interface IBrewLabModel
+public interface IBrewLabModel<T>
 {
-    public int Id { get; set; }
+    public T Id { get; set; }
 }
