@@ -5,7 +5,7 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrewLab.Models", "BrewLab.Models\BrewLab.Models.csproj", "{76335567-93E6-4834-A300-569F5F6853DF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrewLab.Repository", "Repository\BrewLab.Repository.csproj", "{1AAE0527-6533-466E-8B7F-54842E132076}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrewLab.Services", "Repository\BrewLab.Services.csproj", "{1AAE0527-6533-466E-8B7F-54842E132076}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrewLab.Common", "BrewLab.Common\BrewLab.Common.csproj", "{0533473C-A362-4E3B-AC0E-2EAF43F340EA}"
 EndProject

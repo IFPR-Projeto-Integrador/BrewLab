@@ -1,36 +1,42 @@
 ﻿@page "/register"
 @using System.ComponentModel.DataAnnotations
+@inject ExperimenterService experimenterService
+@inject NavigationManager navigation
 
 <MudPaper Class="pa-4">
     <MudForm @ref="Form" @bind-IsValid="IsValid" Spacing="0">
+        @foreach(var error in Errors)
+        {
+            <MudText Color="Color.Error" Class="mv-1">@error</MudText>
+        }
 
         <MudTextField T="string"
                         Label="Login"
-                        Validation="@((string login) => ExperimenterDTOs.ValidateUserName(login))"
+                        Validation="@((string login) => ExperimenterDTO.ValidateUserName(login))"
                         @bind-Value="Experimenter.UserName"
                         Variant="Variant.Filled"/>
         <MudTextField T="string"
                         Label="Email" Required="true"
                         InputType="InputType.Email"
                         @bind-Value="Experimenter.Email"
-                        Validation="@((string email) => ExperimenterDTOs.ValidateEmail(email))"
+                        Validation="@((string email) => ExperimenterDTO.ValidateEmail(email))"
                         Variant="Variant.Filled" />
         <MudTextField T="string"
                         Label="Nome"
-                        Validation="@((string name) => ExperimenterDTOs.ValidateName(name))"
+                        Validation="@((string name) => ExperimenterDTO.ValidateName(name))"
                         @bind-Value="Experimenter.Name"
                         Variant="Variant.Filled" />
         <MudTextField T="string"
                         Label="Senha"
                         InputType="InputType.Password"
                         @bind-Value="Experimenter.Password"
-                        Validation="@((string password) => ExperimenterDTOs.ValidatePassword(password))"
+                        Validation="@((string password) => ExperimenterDTO.ValidatePassword(password))"
                         Variant="Variant.Filled" />
         <MudTextField T="string"
                         Label="Senha"
                         InputType="InputType.Password"
                         @bind-Value="Experimenter.RepeatPassword"
-                        Validation="@((string repeatPassword) => ExperimenterDTOs.ValidateRepeatPassword(Experimenter.Password, repeatPassword))"
+                        Validation="@((string repeatPassword) => ExperimenterDTO.ValidateRepeatPassword(Experimenter.Password, repeatPassword))"
                         Variant="Variant.Filled" />
 
         <div class="mt-4">
@@ -44,9 +50,10 @@
 
 
 @code {
-    private MudForm Form;
-    private bool IsValid;
-    private ExperimenterDTOs.Register Experimenter = new();
+    private MudForm Form { get; set; }
+    private bool IsValid { get; set; }
+    private ExperimenterDTO.Register Experimenter { get; set; } = new();
+    private IEnumerable<string> Errors { get; set; } = [];
 
     private async Task RegisterAsync(MouseEventArgs _)
     {
@@ -56,6 +63,15 @@
             return;
         }
 
+        var result = await experimenterService.Register(Experimenter);
 
+        if (result.Success)
+        {
+            navigation.NavigateTo("/");
+        }
+        else
+        {
+            Errors = result.Errors.Select(e => e.Description);
+        }
     }
 }

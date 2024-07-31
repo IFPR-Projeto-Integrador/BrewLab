@@ -14,9 +14,9 @@ public class ExperimentalPlanning : IBrewLabModel<int>, ILoggedEntity, IVirtualD
     [Required]
     public string Description { get; set; } = "";
     [Required]
-    public DateTime? CreatedAt { get; set; } = DateTime.Now;
+    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
     [Required]
-    public DateTime? UpdatedAt { get; set; } = DateTime.Now;
+    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
     [Required]
     public bool Deleted { get; set; } = false;
 

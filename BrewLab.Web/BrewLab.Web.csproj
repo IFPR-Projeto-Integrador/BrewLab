@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -13,7 +13,11 @@
   <ItemGroup>
     <ProjectReference Include="..\BrewLab.Common\BrewLab.Common.csproj" />
     <ProjectReference Include="..\BrewLab.Models\BrewLab.Models.csproj" />
-    <ProjectReference Include="..\Repository\BrewLab.Repository.csproj" />
+    <ProjectReference Include="..\Repository\BrewLab.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Components\" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
 ﻿@page "/login"
+@inject ExperimenterService experimenterService
 
 <MudPaper Class="pa-4">
     <MudForm @ref="Form" @bind-IsValid="IsValid" Spacing="0">
@@ -11,7 +12,7 @@
                       Label="Senha"
                       InputType="InputType.Password"
                       @bind-Value="Experimenter.Password"
-                      Validation="@((string password) => ExperimenterDTOs.ValidatePassword(password))"
+                      Validation="@((string password) => ExperimenterDTO.ValidatePassword(password))"
                       Variant="Variant.Filled" />
 
         <div class="mt-4">
@@ -27,7 +28,7 @@
 @code {
     private MudForm Form { get; set; }
     private bool IsValid { get; set; }
-    private ExperimenterDTOs.Login Experimenter { get; set; } = new();
+    private ExperimenterDTO.Login Experimenter { get; set; } = new();
 
     private async Task LoginAsync(MouseEventArgs _)
     {
@@ -37,6 +38,6 @@
             return;
         }
 
-
+        
     }
 }

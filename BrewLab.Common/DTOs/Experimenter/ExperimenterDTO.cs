@@ -2,7 +2,7 @@
 
 namespace BrewLab.Common.DTOs;
 
-public class ExperimenterDTOs
+public static class ExperimenterDTO
 {
     public class Register
     {

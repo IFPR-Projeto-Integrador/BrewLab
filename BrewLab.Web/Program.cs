@@ -1,6 +1,9 @@
 using BrewLab.Models;
-using BrewLab.Web.Components;
+using BrewLab.Models.Models;
+using BrewLab.Services.Services;
+using BrewLab.Web;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,11 +19,18 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.MaxAge = TimeSpan.FromMinutes(30);
         options.AccessDeniedPath = "/access-denied";
     });
+
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddDbContext<BrewLabContext>();
 builder.Services.AddMudServices();
+
+builder.Services.AddIdentity<Experimenter, IdentityRole<int>>()
+    .AddEntityFrameworkStores<BrewLabContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<ExperimenterService>();
 
 var app = builder.Build();
 

@@ -9,9 +9,9 @@ public class Experiment : IBrewLabModel<int>, ILoggedEntity, IVirtualDeleteable
     [Required]
     public string ParsedModel { get; set; } = "";
     [Required]
-    public DateTime? CreatedAt { get; set; } = DateTime.Now;
+    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
     [Required]
-    public DateTime? UpdatedAt { get; set; } = DateTime.Now;
+    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
     [Required]
     public bool Deleted { get; set; } = false;
 
