@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace BrewLab.Models.Models;
-public class ExperimentalModel : AuditEntity, IBrewLabModel<int>
+public class ExperimentalModel : IBrewLabModel<int>, IVirtualDeleteable, ILoggedEntity
 {
     [Key]
     public int Id { get; set; }
@@ -13,6 +13,12 @@ public class ExperimentalModel : AuditEntity, IBrewLabModel<int>
     public string Model { get; set; } = "";
     [Required]
     public string Description { get; set; } = "";
+    [Required]
+    public DateTime? CreatedAt { get; set; } = DateTime.Now;
+    [Required]
+    public DateTime? UpdatedAt { get; set; } = DateTime.Now;
+    [Required]
+    public bool Deleted { get; set; } = false;
 
     [Required]
     public int ExperimenterId { get; set; }
