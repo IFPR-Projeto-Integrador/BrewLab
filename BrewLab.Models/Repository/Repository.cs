@@ -26,6 +26,8 @@ public abstract class Repository<TModel>(BrewLabContext context) where TModel : 
         return await result.ToListAsync();
     }
 
+    protected async Task<TModel?> FindSingle(Func<TModel, bool> filter) => (await Find(filter)).FirstOrDefault();
+
     protected async Task Delete(TModel model)
     {
         if (model is IVirtualDeleteable vDeleteableModel)
