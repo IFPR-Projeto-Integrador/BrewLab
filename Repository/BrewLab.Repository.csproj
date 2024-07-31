@@ -11,4 +11,8 @@
     <ProjectReference Include="..\BrewLab.Models\BrewLab.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Implementations\" />
+  </ItemGroup>
+
 </Project>

@@ -2,8 +2,8 @@
 using BrewLab.Models.Base;
 using BrewLab.Models.Models;
 
-namespace BrewLab.Repository;
-public class Repository<TModel>(BrewLabContext context) where TModel : class, IBrewLabModel<int>
+namespace BrewLab.Repository.Base;
+public abstract class Repository<TModel>(BrewLabContext context) where TModel : class, IBrewLabModel<int>
 {
     private readonly BrewLabContext _context = context;
     protected ICollection<TModel> Find(Func<TModel, bool> filter)
