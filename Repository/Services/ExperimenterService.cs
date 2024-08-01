@@ -38,6 +38,19 @@ public class ExperimenterService(
             return ResultDTO.Auth.LoginOuSenhaIncorretos;
     }
 
+    public async Task<ExperimenterDTO.NameAndId?> Validate(string token)
+    {
+        var tokenExperimenter = await Token.ReadToken(token);
+
+        if (tokenExperimenter is null) return null;
+
+        var dbExperimenter = await FindSingle(e => e.Id == tokenExperimenter.Id);
+
+        if (dbExperimenter is null) return null;
+
+        return tokenExperimenter;
+    }
+
     public async Task<ResultDTO.Auth> Register(ExperimenterDTO.Register register)
     {
         var experimenterModel = new Experimenter()
@@ -56,10 +69,5 @@ public class ExperimenterService(
             Token = Token.GenerateToken(new ExperimenterDTO.NameAndId 
             { Id = experimenterModel.Id, UserName = experimenterModel.UserName })
         };
-    }
-
-    public async Task<ExperimenterDTO.NameAndId?> Validate(string token)
-    {
-        return await Token.ReadToken(token);
     }
 }

@@ -5,10 +5,7 @@
 @inject NavigationManager navigation
 @attribute [Authorize]
 
-@foreach(var error in Errors)
-{
-    <MudText Color="Color.Error">@error</MudText>
-}
+
 
 <MudPaper Class="pa-4">
     <MudForm @ref="Form" @bind-IsValid="IsValid" Spacing="0" >
@@ -30,6 +27,10 @@
                        Color="Color.Primary">Login
             </MudButton>
         </div>
+        @foreach (var error in Errors)
+        {
+            <MudText Color="Color.Error">@error</MudText>
+        }
 
     </MudForm>
 </MudPaper>
@@ -61,5 +62,8 @@
         var result = await authService.Login(Experimenter);
 
         Errors = result.Errors;
+
+        if (result.Success)
+            await authService.SetTokenLocalStorage(result.Token!);
     }
 }
