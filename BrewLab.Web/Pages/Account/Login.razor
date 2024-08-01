@@ -1,6 +1,14 @@
 ﻿@page "/login"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
 @inject AuthService authService
 @inject NavigationManager navigation
+@attribute [Authorize]
+
+@foreach(var error in Errors)
+{
+    <MudText Color="Color.Error">@error</MudText>
+}
 
 <MudPaper Class="pa-4">
     <MudForm @ref="Form" @bind-IsValid="IsValid" Spacing="0" >
@@ -26,18 +34,21 @@
     </MudForm>
 </MudPaper>
 
-<p>Token: @Token</p>
-<p>Username: @Username</p>
-<p>Id: @Id</p>
+<AuthorizeView>
+    <Authorized>
+        You are logged in!
+    </Authorized>
+    <NotAuthorized>
+        You are not logged in.
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private MudForm Form { get; set; }
     private bool IsValid { get; set; }
     private ExperimenterDTO.Login Experimenter { get; set; } = new();
 
-    private string Username { get; set; } = "";
-    private int Id { get; set; } = 0;
-    private string Token { get; set; } = "";
+    private IEnumerable<string> Errors { get; set; } = [];
 
     private async Task LoginAsync()
     {
@@ -47,10 +58,8 @@
             return;
         }
 
-            Token = Common.JWT.Token.GenerateToken(new ExperimenterDTO.NameAndId { Id = int.Parse(Experimenter.Password), UserName = Experimenter.UserName });
-        var result = await Common.JWT.Token.ReadToken(Token);
-        if (result is null) return;
-        Username = result.UserName;
-        Id = result.Id;
+        var result = await authService.Login(Experimenter);
+
+        Errors = result.Errors;
     }
 }

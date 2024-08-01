@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.7" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\BrewLab.Models\BrewLab.Models.csproj" />
   </ItemGroup>
 

@@ -1,37 +1,59 @@
 ﻿using BrewLab.Common.DTOs;
-using BrewLab.Models.Models;
 using BrewLab.Services.Services;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Components.Authorization;
+using System.Security.Claims;
 
 namespace BrewLab.Web.Services;
 
-public class AuthService(ExperimenterService experimenterRepo, SignInManager<Experimenter> signInManager)
+public class AuthService(ExperimenterService experimenterRepo) : AuthenticationStateProvider
 {
-    private readonly ExperimenterService _experimenterRepo = experimenterRepo;
-    private readonly SignInManager<Experimenter> _signInManager = signInManager;
+    private readonly ExperimenterService _experimenterService = experimenterRepo;
 
-    public async Task<bool> Login(ExperimenterDTO.Login login)
+    public string Token { get; set; } = "";
+
+    public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        //var result = await _experimenterRepo.GetUser(login);
+        var principal = new ClaimsPrincipal();
 
-        //if (result is null) return false;
+        if (string.IsNullOrWhiteSpace(Token)) return new AuthenticationState(principal);
 
-        //await _signInManager.SignInAsync(result, false);
+        var user = await _experimenterService.Validate(Token);
 
-        return false;
+        if (user is null) return new AuthenticationState(principal);
+
+        List<Claim> claims = [
+            new Claim("Username", user.UserName),
+            new Claim("Id", user.Id.ToString())
+            ];
+
+        var identity = new ClaimsIdentity(claims, "LocalStorage");
+
+        principal.AddIdentity(identity);
+
+        return new AuthenticationState(principal);
     }
 
-    public async Task Logout(HttpContext context)
+    public async Task<ResultDTO.Auth> Login(ExperimenterDTO.Login login)
     {
-        if (context.User.Identity is not null && context.User.Identity.IsAuthenticated)
-        {
-            await context.SignOutAsync();
-        }
+        var result = await _experimenterService.Login(login);
+
+        if (!result.Success) return result;
+
+        Token = result.Token!;
+
+        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+
+        return result;
+    }
+
+    public void Logout()
+    {
+        Token = "";
+        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
 
     public async Task<ResultDTO.Auth> Register(ExperimenterDTO.Register register)
     {
-        return new();
+        return await _experimenterService.Register(register);
     }
 }

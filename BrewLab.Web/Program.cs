@@ -5,6 +5,7 @@ using BrewLab.Web.Services;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor.Services;
 using BrewLab.Web;
+using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +23,8 @@ builder.Services.AddIdentity<Experimenter, IdentityRole<int>>()
 
 builder.Services.AddScoped<PasswordHasher<Experimenter>>();
 builder.Services.AddScoped<ExperimenterService>();
-builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<AuthenticationStateProvider, AuthService>();
+builder.Services.AddScoped<AuthService>(sp => (AuthService) sp.GetRequiredService<AuthenticationStateProvider>());
 builder.Services.AddMudServices();
 
 var app = builder.Build();

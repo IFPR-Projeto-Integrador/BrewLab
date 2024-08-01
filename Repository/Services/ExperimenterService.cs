@@ -1,4 +1,5 @@
 ﻿using BrewLab.Common.DTOs;
+using BrewLab.Common.JWT;
 using BrewLab.Models;
 using BrewLab.Models.Models;
 using BrewLab.Repository.Base;
@@ -7,28 +8,34 @@ using Microsoft.AspNetCore.Identity;
 namespace BrewLab.Services.Services;
 public class ExperimenterService(
     BrewLabContext context,
-    SignInManager<Experimenter> signInManager,
+    PasswordHasher<Experimenter> hasher,
     UserManager<Experimenter> userManager) : Repository<Experimenter>(context)
 {
-    private readonly SignInManager<Experimenter> _signInManager = signInManager;
+    private readonly PasswordHasher<Experimenter> _hasher = hasher;
     private readonly UserManager<Experimenter> _userManager = userManager;
 
-    public async Task<bool> Login(ExperimenterDTO.Login login)
+    public async Task<ResultDTO.Auth> Login(ExperimenterDTO.Login login)
     {
-        if (IsDeleted(e => e.UserName == login.UserName)) return false;
+        var experimenter = await FindSingle(e => e.UserName == login.UserName);
 
-        var experimenter = await _userManager.FindByNameAsync(login.UserName);
+        if (experimenter is null || experimenter.PasswordHash is null || experimenter.UserName is null)
+        {
+            return ResultDTO.Auth.LoginOuSenhaIncorretos;
+        }
 
-        if (experimenter is null) return false;
+        var result = _hasher.VerifyHashedPassword(experimenter, experimenter.PasswordHash, login.Password);
 
-        var result = await _signInManager.CheckPasswordSignInAsync(experimenter, login.Password, false);
-
-        if (result.Succeeded)
-            await _signInManager.SignInAsync(experimenter, true);
+        if (result == PasswordVerificationResult.Success)
+        {
+            return new ResultDTO.Auth
+            {
+                Success = true,
+                Token = Token.GenerateToken(new ExperimenterDTO.NameAndId()
+                { Id = experimenter.Id, UserName = experimenter.UserName })
+            };
+        }
         else
-            return false;
-
-        return true;
+            return ResultDTO.Auth.LoginOuSenhaIncorretos;
     }
 
     public async Task<ResultDTO.Auth> Register(ExperimenterDTO.Register register)
@@ -45,7 +52,14 @@ public class ExperimenterService(
         return new ResultDTO.Auth
         {
             Success = result.Succeeded,
-            Errors = result.Errors.Select(e => (e.Description, e.Code))
+            Errors = result.Errors.Select(e => e.Description),
+            Token = Token.GenerateToken(new ExperimenterDTO.NameAndId 
+            { Id = experimenterModel.Id, UserName = experimenterModel.UserName })
         };
+    }
+
+    public async Task<ExperimenterDTO.NameAndId?> Validate(string token)
+    {
+        return await Token.ReadToken(token);
     }
 }
