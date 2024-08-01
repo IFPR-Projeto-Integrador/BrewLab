@@ -31,10 +31,6 @@
     private bool IsValid { get; set; }
     private ExperimenterDTO.Login Experimenter { get; set; } = new();
 
-    [CascadingParameter]
-    private AuthParams AuthenticationParams { get; set; } = default!;
-
-
     private async Task LoginAsync()
     {
         if (!IsValid)

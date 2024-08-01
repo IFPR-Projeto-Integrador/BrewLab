@@ -15,15 +15,6 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddCascadingAuthenticationState();
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.Cookie.Name = "auth_token";
-        options.LoginPath = "/login";
-        options.Cookie.MaxAge = TimeSpan.FromMinutes(30);
-        options.AccessDeniedPath = "/access-denied";
-    });
-
 builder.Services.AddDbContext<BrewLabContext>();
 
 builder.Services.AddIdentity<Experimenter, IdentityRole<int>>()

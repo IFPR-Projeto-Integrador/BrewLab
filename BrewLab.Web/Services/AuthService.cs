@@ -16,13 +16,13 @@ public class AuthService(ExperimenterService experimenterRepo, SignInManager<Exp
 
     public async Task<bool> Login(ExperimenterDTO.Login login)
     {
-        var result = await _experimenterRepo.GetUser(login);
+        //var result = await _experimenterRepo.GetUser(login);
 
-        if (result is null) return false;
+        //if (result is null) return false;
 
-        await _signInManager.SignInAsync(result, false);
+        //await _signInManager.SignInAsync(result, false);
 
-        return true;
+        return false;
     }
 
     public async Task Logout(HttpContext context)
