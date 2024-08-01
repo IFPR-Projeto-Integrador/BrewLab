@@ -2,6 +2,7 @@ using BrewLab.Models;
 using BrewLab.Models.Models;
 using BrewLab.Services.Services;
 using BrewLab.Web;
+using BrewLab.Web.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor.Services;
@@ -11,6 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddCascadingAuthenticationState();
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -20,17 +24,17 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/access-denied";
     });
 
-builder.Services.AddAuthorization();
-builder.Services.AddCascadingAuthenticationState();
-
 builder.Services.AddDbContext<BrewLabContext>();
-builder.Services.AddMudServices();
 
 builder.Services.AddIdentity<Experimenter, IdentityRole<int>>()
     .AddEntityFrameworkStores<BrewLabContext>()
+    .AddSignInManager()
     .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<PasswordHasher<Experimenter>>();
 builder.Services.AddScoped<ExperimenterService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddMudServices();
 
 var app = builder.Build();
 
@@ -46,8 +50,6 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

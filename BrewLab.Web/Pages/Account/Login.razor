@@ -1,8 +1,9 @@
 ﻿@page "/login"
-@inject ExperimenterService experimenterService
+@inject AuthService authService
+@inject NavigationManager navigation
 
 <MudPaper Class="pa-4">
-    <MudForm @ref="Form" @bind-IsValid="IsValid" Spacing="0">
+    <MudForm @ref="Form" @bind-IsValid="IsValid" Spacing="0" >
 
         <MudTextField T="string"
                       Label="Login"
@@ -16,7 +17,7 @@
                       Variant="Variant.Filled" />
 
         <div class="mt-4">
-            <MudButton OnClick="LoginAsync"
+            <MudButton @onclick="LoginAsync"
                        Variant="Variant.Filled"
                        Color="Color.Primary">Login
             </MudButton>
@@ -30,7 +31,11 @@
     private bool IsValid { get; set; }
     private ExperimenterDTO.Login Experimenter { get; set; } = new();
 
-    private async Task LoginAsync(MouseEventArgs _)
+    [CascadingParameter]
+    private AuthParams AuthenticationParams { get; set; } = default!;
+
+
+    private async Task LoginAsync()
     {
         if (!IsValid)
         {
@@ -38,6 +43,6 @@
             return;
         }
 
-        
+        navigation.NavigateTo("/Auth/login");
     }
 }
