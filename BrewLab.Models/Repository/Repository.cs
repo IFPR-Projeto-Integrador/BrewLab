@@ -59,15 +59,22 @@ public abstract class Repository<TModel>(BrewLabContext context) where TModel : 
         await _context.SaveChangesAsync();
     }
 
-    protected bool IsDeleted(Func<TModel, bool> filter)
+    protected bool Exists(Func<TModel, bool> filter)
     {
-        if (!TModelIs<IVirtualDeleteable>()) throw new NotSupportedException("The underlying type does not implement IVirtualDeleteable.");
+        IQueryable<TModel> results = null!;
 
-        return _context.Set<TModel>()
+        if (TModelIs<IVirtualDeleteable>())
+            results = _context.Set<TModel>()
+                .Cast<IVirtualDeleteable>()
+                .Where(d => d.Deleted == false)
+                .Cast<TModel>();
+        else
+            results = _context.Set<TModel>()
+                .AsQueryable();
+
+        return results
             .Where(filter)
-            .Cast<IVirtualDeleteable>()
-            .Select(d => d.Deleted)
-            .FirstOrDefault();
+            .Any();
     }
 
     private static bool TModelIs<TCompare>() => typeof(TCompare).IsAssignableFrom(typeof(TModel));
