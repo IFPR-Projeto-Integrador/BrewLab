@@ -1,5 +1,4 @@
 ﻿using BrewLab.Common.DTOs;
-using BrewLab.Common.DTOs.Results;
 using BrewLab.Models;
 using BrewLab.Models.Models;
 using BrewLab.Repository.Base;

@@ -1,4 +1,4 @@
-﻿using BrewLab.Common;
+﻿using BrewLab.Common.Configuration;
 using BrewLab.Models.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;

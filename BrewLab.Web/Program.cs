@@ -1,11 +1,10 @@
 using BrewLab.Models;
 using BrewLab.Models.Models;
 using BrewLab.Services.Services;
-using BrewLab.Web;
 using BrewLab.Web.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor.Services;
+using BrewLab.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +18,6 @@ builder.Services.AddDbContext<BrewLabContext>();
 
 builder.Services.AddIdentity<Experimenter, IdentityRole<int>>()
     .AddEntityFrameworkStores<BrewLabContext>()
-    .AddSignInManager()
     .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<PasswordHasher<Experimenter>>();

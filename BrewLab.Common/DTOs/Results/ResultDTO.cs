@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BrewLab.Common.DTOs.Results;
+namespace BrewLab.Common.DTOs;
 public static class ResultDTO
 {
     public class Auth

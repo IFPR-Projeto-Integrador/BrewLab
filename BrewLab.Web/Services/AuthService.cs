@@ -1,11 +1,8 @@
 ﻿using BrewLab.Common.DTOs;
-using BrewLab.Common.DTOs.Results;
 using BrewLab.Models.Models;
 using BrewLab.Services.Services;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
 
 namespace BrewLab.Web.Services;
 

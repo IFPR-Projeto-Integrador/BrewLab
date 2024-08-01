@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace BrewLab.Common.DTOs;
+﻿namespace BrewLab.Common.DTOs;
 
 public static class ExperimenterDTO
 {
@@ -32,6 +30,19 @@ public static class ExperimenterDTO
         public bool Validate()
         {
             if (ValidatePassword(Password).Any()) return false;
+            if (ValidateUserName(UserName).Any()) return false;
+
+            return true;
+        }
+    }
+
+    public class NameAndId
+    {
+        public int Id { get; set; } = 0;
+        public string UserName { get; set; } = "";
+
+        public bool Validate()
+        {
             if (ValidateUserName(UserName).Any()) return false;
 
             return true;

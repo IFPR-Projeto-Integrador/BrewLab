@@ -26,10 +26,18 @@
     </MudForm>
 </MudPaper>
 
+<p>Token: @Token</p>
+<p>Username: @Username</p>
+<p>Id: @Id</p>
+
 @code {
     private MudForm Form { get; set; }
     private bool IsValid { get; set; }
     private ExperimenterDTO.Login Experimenter { get; set; } = new();
+
+    private string Username { get; set; } = "";
+    private int Id { get; set; } = 0;
+    private string Token { get; set; } = "";
 
     private async Task LoginAsync()
     {
@@ -39,6 +47,10 @@
             return;
         }
 
-        navigation.NavigateTo("/Auth/login");
+            Token = Common.JWT.Token.GenerateToken(new ExperimenterDTO.NameAndId { Id = int.Parse(Experimenter.Password), UserName = Experimenter.UserName });
+        var result = await Common.JWT.Token.ReadToken(Token);
+        if (result is null) return;
+        Username = result.UserName;
+        Id = result.Id;
     }
 }
