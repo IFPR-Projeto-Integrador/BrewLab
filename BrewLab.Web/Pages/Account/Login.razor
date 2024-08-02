@@ -19,16 +19,19 @@
                       Validation="@((string password) => ExperimenterDTO.ValidatePassword(password))"
                       Variant="Variant.Filled" />
 
+        @foreach (var error in Errors)
+        {
+            <MudText Color="Color.Error">@error</MudText>
+        }
         <div class="mt-4">
             <MudButton @onclick="LoginAsync"
                        Variant="Variant.Filled"
                        Color="Color.Primary">Login
             </MudButton>
         </div>
-        @foreach (var error in Errors)
-        {
-            <MudText Color="Color.Error">@error</MudText>
-        }
+        <div class="mt-2">
+            <MudLink Href="/account/register">Ou cadastre-se no lugar.</MudLink>
+        </div>
 
     </MudForm>
 </MudPaper>

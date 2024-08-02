@@ -7,6 +7,7 @@ using MudBlazor.Services;
 using BrewLab.Web;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using MudBlazor;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +23,10 @@ builder.Services.AddScoped<PasswordHasher<Experimenter>>();
 builder.Services.AddScoped<ExperimenterService>();
 builder.Services.AddScoped<AuthenticationStateProvider, AuthService>();
 builder.Services.AddScoped<AuthService>(sp => (AuthService) sp.GetRequiredService<AuthenticationStateProvider>());
-builder.Services.AddMudServices();
+builder.Services.AddMudServices(config =>
+{
+    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
+});
 
 var app = builder.Build();
 

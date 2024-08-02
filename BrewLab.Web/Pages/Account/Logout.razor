@@ -1,0 +1,19 @@
+﻿@page "/account/logout"
+@inject AuthService authService
+@inject NavigationManager navigation
+@inject ISnackbar snackbar
+@attribute [AllowAnonymous]
+
+<MudStack Row="true" Justify="Justify.Center">
+    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Class="mt-lg-12" Indeterminate="true" />
+</MudStack>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        authService.Logout();
+        await authService.DeleteTokenLocalStorage();
+        snackbar.Add("Deslogado com sucesso!", Severity.Success);
+        navigation.NavigateTo("/account/login");
+    }
+}

@@ -39,21 +39,22 @@
             return;
         }
 
-        AuthenticationState.HasAuthenticated = true;
+        AuthenticationState.HasAttemptedAuthentication = true;
+        AuthenticationState.IsAuthenticated = true;
 
         navigation.ToReturnUrl();
-        Console.WriteLine("Just testing.");
     }
 
     private async Task Reinitialize()
     {
         await authService.DeleteTokenLocalStorage();
-        AuthenticationState.HasAuthenticated = true;
+        AuthenticationState.HasAttemptedAuthentication = true;
         navigation.NavigateTo("/account/login");
     }
 
     public class AuthState
     {
-        public bool HasAuthenticated { get; set; } = false;
+        public bool HasAttemptedAuthentication { get; set; } = false;
+        public bool IsAuthenticated { get; set; } = false;
     }
 }

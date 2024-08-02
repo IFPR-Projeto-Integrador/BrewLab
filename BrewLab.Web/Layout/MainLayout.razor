@@ -8,18 +8,27 @@
 
 <MudLayout>
     <MudAppBar Elevation="2">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => _drawerOpen = !_drawerOpen)" />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerOpen = !DrawerOpen)" />
         <MudText Typo="Typo.h5" Class="ml-3">BrewLab</MudText>
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+        <AuthorizeView>
+            <Authorized>
+                <MudIcon Icon="@Icons.Material.Outlined.AccountCircle" Size="Size.Large" Class="mr-2" />
+                <MudLink Href="/account/logout">Logout</MudLink>
+            </Authorized>
+            <NotAuthorized>
+                <MudLink Href="/account/login">Login</MudLink>
+            </NotAuthorized>
+        </AuthorizeView>
     </MudAppBar>
 
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+    <MudDrawer @bind-Open="DrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu />
     </MudDrawer>
+    
 
     <MudMainContent>
-        @if(AuthenticationState.HasAuthenticated)
+        @if(AuthenticationState.HasAttemptedAuthentication)
         {
             <div class="ma-3">
                 @Body
@@ -30,14 +39,14 @@
             <MudStack Row="true" Justify="Justify.Center">
                 <MudProgressCircular Color="Color.Primary" Size="Size.Large" Class="mt-lg-12" Indeterminate="true" />
             </MudStack>
-            
         }
 
     </MudMainContent>
 </MudLayout>
 
 @code {
-    bool _drawerOpen = true;
+    private bool DrawerOpen { get; set; } = true;
+
 
     [CascadingParameter]
     private AuthState AuthenticationState { get; set; } = default!;
