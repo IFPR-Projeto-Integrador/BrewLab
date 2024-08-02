@@ -16,8 +16,4 @@
     <ProjectReference Include="..\Repository\BrewLab.Services.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Components\" />
-  </ItemGroup>
-
 </Project>

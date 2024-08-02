@@ -27,11 +27,13 @@ public class ExperimenterService(
 
         if (result == PasswordVerificationResult.Success)
         {
+            var nameAndId = new ExperimenterDTO.NameAndId()
+            { Id = experimenter.Id, UserName = experimenter.UserName };
             return new ResultDTO.Auth
             {
                 Success = true,
-                Token = Token.GenerateToken(new ExperimenterDTO.NameAndId()
-                { Id = experimenter.Id, UserName = experimenter.UserName })
+                Token = Token.GenerateToken(nameAndId),
+                Experimenter = nameAndId
             };
         }
         else
@@ -62,12 +64,15 @@ public class ExperimenterService(
 
         var result = await _userManager.CreateAsync(experimenterModel, register.Password);
 
+        var nameAndId = new ExperimenterDTO.NameAndId()
+        { Id = experimenterModel.Id, UserName = experimenterModel.UserName };
+
         return new ResultDTO.Auth
         {
             Success = result.Succeeded,
             Errors = result.Errors.Select(e => e.Description),
-            Token = Token.GenerateToken(new ExperimenterDTO.NameAndId 
-            { Id = experimenterModel.Id, UserName = experimenterModel.UserName })
+            Token = Token.GenerateToken(nameAndId),
+            Experimenter = nameAndId
         };
     }
 }

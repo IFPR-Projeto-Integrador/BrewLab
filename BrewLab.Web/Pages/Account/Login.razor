@@ -1,9 +1,7 @@
-﻿@page "/login"
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.Authorization
+﻿@page "/account/login"
 @inject AuthService authService
 @inject NavigationManager navigation
-@attribute [Authorize]
+@attribute [AllowAnonymous]
 
 
 
@@ -35,17 +33,8 @@
     </MudForm>
 </MudPaper>
 
-<AuthorizeView>
-    <Authorized>
-        You are logged in!
-    </Authorized>
-    <NotAuthorized>
-        You are not logged in.
-    </NotAuthorized>
-</AuthorizeView>
-
 @code {
-    private MudForm Form { get; set; }
+    private MudForm Form { get; set; } = default!;
     private bool IsValid { get; set; }
     private ExperimenterDTO.Login Experimenter { get; set; } = new();
 
@@ -64,6 +53,10 @@
         Errors = result.Errors;
 
         if (result.Success)
+        {
             await authService.SetTokenLocalStorage(result.Token!);
+            navigation.NavigateTo("/");
+        }
+        
     }
 }

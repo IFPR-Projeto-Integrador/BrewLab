@@ -1,5 +1,7 @@
-﻿@page "/register"
+﻿@page "/account/register"
 @inject NavigationManager navigation
+@inject AuthService authService
+@attribute [AllowAnonymous]
 
 <MudPaper Class="pa-4">
     <MudForm @ref="Form" @bind-IsValid="IsValid" Spacing="0">
@@ -48,7 +50,7 @@
 
 
 @code {
-    private MudForm Form { get; set; }
+    private MudForm Form { get; set; } = default!;
     private bool IsValid { get; set; }
     private ExperimenterDTO.Register Experimenter { get; set; } = new();
     private IEnumerable<string> Errors { get; set; } = [];
@@ -60,5 +62,16 @@
             await Form.Validate();
             return;
         }
+
+        var result = await authService.Register(Experimenter);
+
+        Errors = result.Errors;
+
+        if (result.Success)
+        {
+            await authService.SetTokenLocalStorage(result.Token!);
+            navigation.NavigateTo("/");
+        }
+        
     }
 }

@@ -6,20 +6,17 @@ using Microsoft.AspNetCore.Identity;
 using MudBlazor.Services;
 using BrewLab.Web;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
-builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddDbContext<BrewLabContext>();
 
 builder.Services.AddIdentity<Experimenter, IdentityRole<int>>()
-    .AddEntityFrameworkStores<BrewLabContext>()
-    .AddDefaultTokenProviders();
+    .AddEntityFrameworkStores<BrewLabContext>();
 
 builder.Services.AddScoped<PasswordHasher<Experimenter>>();
 builder.Services.AddScoped<ExperimenterService>();

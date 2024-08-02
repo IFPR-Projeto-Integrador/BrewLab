@@ -6,6 +6,7 @@ public static class ResultDTO
         public bool Success { get; set; }
         public IEnumerable<string> Errors { get; set; } = [];
         public string? Token { get; set; }
+        public ExperimenterDTO.NameAndId? Experimenter { get; set; }
 
         public static readonly Auth LoginOuSenhaIncorretos = new()
         {

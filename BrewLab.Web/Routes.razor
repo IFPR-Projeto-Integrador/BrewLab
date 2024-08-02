@@ -1,20 +1,59 @@
-﻿@inject AuthService authService
+﻿@using BrewLab.Web.Extensions
+@inject AuthService authService
+@inject NavigationManager navigation
 
-<Router AppAssembly="typeof(Program).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
-        <FocusOnNavigate RouteData="routeData" Selector="h1" />
-    </Found>
-</Router>
+<CascadingValue Value="AuthenticationState">
+    <CascadingAuthenticationState>
+        <Router AppAssembly="typeof(Program).Assembly">
+            <Found Context="routeData">
+                <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+                <FocusOnNavigate RouteData="routeData" Selector="h1" />
+            </Found>
+        </Router>
+    </CascadingAuthenticationState>
+</CascadingValue>
+
 
 @code {
+    private AuthState AuthenticationState { get; set; } = new();
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var token = await authService.GetTokenLocalStorage();
-            if (token is null) return;
-            var user = await authService.Validate(token);
+            await Authenticate();
         }
+    }
+
+    private async Task Authenticate()
+    {
+        var token = await authService.GetTokenLocalStorage();
+        if (token is null)
+        {
+            await Reinitialize();
+            return;
+        }
+        var user = await authService.Validate(token);
+        if (user is null)
+        {
+            await Reinitialize();
+            return;
+        }
+
+        AuthenticationState.HasAuthenticated = true;
+
+        navigation.ToReturnUrl();
+        Console.WriteLine("Just testing.");
+    }
+
+    private async Task Reinitialize()
+    {
+        await authService.DeleteTokenLocalStorage();
+        AuthenticationState.HasAuthenticated = true;
+        navigation.NavigateTo("/account/login");
+    }
+
+    public class AuthState
+    {
+        public bool HasAuthenticated { get; set; } = false;
     }
 }

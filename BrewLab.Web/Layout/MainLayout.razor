@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using static BrewLab.Web.Routes
+@inherits LayoutComponentBase
 
 <MudThemeProvider IsDarkMode="true"/>
 <MudPopoverProvider />
@@ -14,16 +15,30 @@
     </MudAppBar>
 
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <NavMenu> </NavMenu>
+        <NavMenu />
     </MudDrawer>
 
     <MudMainContent>
-        <div class="ma-3">
-            @Body
-        </div>
+        @if(AuthenticationState.HasAuthenticated)
+        {
+            <div class="ma-3">
+                @Body
+            </div>
+        }
+        else
+        {
+            <MudStack Row="true" Justify="Justify.Center">
+                <MudProgressCircular Color="Color.Primary" Size="Size.Large" Class="mt-lg-12" Indeterminate="true" />
+            </MudStack>
+            
+        }
+
     </MudMainContent>
 </MudLayout>
 
 @code {
-    bool _drawerOpen = false;
+    bool _drawerOpen = true;
+
+    [CascadingParameter]
+    private AuthState AuthenticationState { get; set; } = default!;
 }

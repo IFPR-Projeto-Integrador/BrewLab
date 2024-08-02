@@ -48,6 +48,19 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
         return result;
     }
 
+    public async Task<ResultDTO.Auth> Register(ExperimenterDTO.Register register)
+    {
+        var result = await _experimenterService.Register(register);
+
+        if (!result.Success) return result;
+
+        Token = result.Token!;
+
+        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+
+        return result;
+    }
+
     public async Task<ExperimenterDTO.NameAndId?> Validate(string token)
     {
         var result = await _experimenterService.Validate(token);
@@ -67,10 +80,7 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
 
-    public async Task<ResultDTO.Auth> Register(ExperimenterDTO.Register register)
-    {
-        return await _experimenterService.Register(register);
-    }
+
 
     // Não chamar antes do ciclo de vida de pós-renderização.
     public async Task<string?> GetTokenLocalStorage()
@@ -85,5 +95,11 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
     public async Task SetTokenLocalStorage(string token)
     {
         await _localStorage.SetAsync("Token", token);
+    }
+
+    // Não chamar antes do ciclo de vida de pós-renderização.
+    public async Task DeleteTokenLocalStorage()
+    {
+        await _localStorage.DeleteAsync("Token");
     }
 }
