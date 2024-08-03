@@ -1,6 +1,7 @@
 ﻿@page "/experimentalModel/index"
 @inject ExperimentalModelService experimentalModelService
 @inject AuthService authService
+@inject IDialogService dialogService
 
 <MudPaper Width="100%">
     @if (ExperimentalModels is not null)
@@ -20,10 +21,14 @@
             <RowTemplate>
                 <MudTd DataLabel="Id">@context.Id</MudTd>
                 <MudTd DataLabel="Nome">@context.Name</MudTd>
-                <MudTd DataLabel="Modelo">@context.Model</MudTd>
+                <MudTd DataLabel="Modelo">
+                    <MudButton Variant="Variant.Text" 
+                        Color="Color.Info" 
+                        OnClick="@(() => OpenModelAsync(@context.Model))">Visualizar modelo</MudButton>
+                </MudTd>
                 <MudTd DataLabel="Descrição">@context.Description</MudTd>
                 <MudTd DataLabel="Ações" Style="text-align: center">
-                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Size="Size.Medium"
+                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Color="Color.Primary" Size="Size.Medium"
                              AriaLabel="Abrir menu de ações">
                         <MudMenuItem Href="@($"/experimentalModel/view/view/{context.Id}")" 
                             Icon="@Icons.Material.Rounded.RemoveRedEye" IconColor="Color.Info" A>Visualizar</MudMenuItem>
@@ -59,5 +64,18 @@
         ExperimentalModels = experimentalModelService.GetExperimentalModelsByExperimenterId(authService.User.Id);
 
         Loading = false;
+    }
+
+    private async Task OpenModelAsync(string model)
+    {
+        var parameters = new DialogParameters<ModelDialog>
+        {
+            { x => x.ReadOnly, true },
+            { x => x.Model, model },
+        };
+
+        var options = new DialogOptions() { FullWidth = true, MaxWidth = MaxWidth.Large, CloseOnEscapeKey = true };
+
+        await dialogService.ShowAsync<ModelDialog>("", parameters, options);
     }
 }
