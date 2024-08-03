@@ -7,7 +7,7 @@ namespace BrewLab.Repository.Base;
 public abstract class Repository<TModel>(BrewLabContext context) where TModel : class, IBrewLabModel<int>
 {
     private readonly BrewLabContext _context = context;
-    protected async Task<ICollection<TModel>> Find(Func<TModel, bool> filter)
+    protected ICollection<TModel> Find(Func<TModel, bool> filter)
     {
         IQueryable<TModel>? result = null;
 
@@ -23,10 +23,12 @@ public abstract class Repository<TModel>(BrewLabContext context) where TModel : 
             result = _context.Set<TModel>().AsQueryable();
         }
 
-        return await result.ToListAsync();
+        return result
+            .Where(filter)
+            .ToList();
     }
 
-    protected async Task<TModel?> FindSingle(Func<TModel, bool> filter) => (await Find(filter)).FirstOrDefault();
+    protected async Task<TModel?> FindSingle(Func<TModel, bool> filter) => Find(filter).FirstOrDefault();
 
     protected async Task Delete(TModel model)
     {

@@ -103,3 +103,10 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
         await _localStorage.DeleteAsync("Token");
     }
 }
+
+public class AuthState
+{
+    public bool HasAttemptedAuthentication { get; set; } = false;
+    public bool IsAuthenticated { get; set; } = false;
+    public ExperimenterDTO.NameAndId? User { get; set; }
+}

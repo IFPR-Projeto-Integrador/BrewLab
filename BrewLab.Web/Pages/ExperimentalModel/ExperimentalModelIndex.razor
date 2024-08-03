@@ -1,7 +1,52 @@
 ﻿@page "/experimentalModel/index"
+@inject ExperimentalModelService experimentalModelService
 
-<h3>ExperimentalModelIndex</h3>
+<MudPaper Width="100%">
+    @if (ExperimentalModels is not null)
+    {
+        <MudTable Items="@ExperimentalModels" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@Loading" LoadingProgressColor="Color.Info">
+            <HeaderContent>
+                <MudTh>Id</MudTh>
+                <MudTh>Nome</MudTh>
+                <MudTh>Modelo</MudTh>
+                <MudTh>Descrição</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Model">@context.Model</MudTd>
+                <MudTd DataLabel="Description">@context.Description</MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+    else
+    {
+        <MudStack Row="true" Justify="Justify.Center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Class="mt-lg-12" Indeterminate="true" />
+        </MudStack>
+    }
+
+</MudPaper>
 
 @code {
+    [CascadingParameter]
+    public AuthState AuthState { get; set; } = default!;
 
+    private IEnumerable<ExperimentalModelDTO.View>? ExperimentalModels { get; set; }
+    private bool Loading { get; set; } = true;
+
+    protected override void OnParametersSet()
+    {
+        Loading = true;
+
+        if (AuthState.User is null)
+        {
+            Console.WriteLine("Deu merda! =w=");
+            return;
+        }
+
+        ExperimentalModels = experimentalModelService.GetExperimentalModelsByExperimenterId(AuthState.User.Id);
+
+        Loading = false;
+    }
 }

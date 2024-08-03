@@ -13,8 +13,8 @@ public class ExperimentalModelService(
     {
         ArgumentNullException.ThrowIfNull(nameof(create));
 
-        if (!create.Validate()) return ResultDTO.Result.InvalidDTO;
         if (!_experimenterService.ExperimenterExists(create.ExperimenterId)) return ResultDTO.Result.InvalidIdentification;
+        if (!create.Validate()) return ResultDTO.Result.InvalidDTO;
 
         var model = new ExperimentalModel
         {
@@ -29,11 +29,11 @@ public class ExperimentalModelService(
         return ResultDTO.Result.Succeeded;
     }
 
-    public async Task<IEnumerable<ExperimentalModelDTO.View>?> GetExperimentalModelsByExperimenterId(int experimenterId)
+    public IEnumerable<ExperimentalModelDTO.View>? GetExperimentalModelsByExperimenterId(int experimenterId)
     {
         if (!_experimenterService.ExperimenterExists(experimenterId)) return null;
 
-        var dbModels = await Find(m => m.ExperimenterId == experimenterId);
+        var dbModels = Find(m => m.ExperimenterId == experimenterId);
         var returnModels = dbModels.Select(m => new ExperimentalModelDTO.View
         {
             Id = m.Id,

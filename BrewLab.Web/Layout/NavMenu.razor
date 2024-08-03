@@ -6,9 +6,10 @@
 <MudNavMenu>
     <AuthorizeView>
         <Authorized>
-            <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home" IconColor="Color.Inherit" Href="/">Home</MudNavLink>
-            <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Timer" IconColor="Color.Inherit" Href="/counter">Counter</MudNavLink>
-            <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Cloud" IconColor="Color.Inherit" Href="/weather">Weather</MudNavLink>
+            <MudNavGroup Title="Experimentos modelos">
+                <MudNavLink Match="NavLinkMatch.All" IconColor="Color.Inherit" Href="/experimentalModel/index">Listagem</MudNavLink>
+                <MudNavLink Match="NavLinkMatch.All" IconColor="Color.Inherit" Href="/experimentalModel/view/create/0">Cadastrar</MudNavLink>
+            </MudNavGroup>
         </Authorized>
     </AuthorizeView>
 

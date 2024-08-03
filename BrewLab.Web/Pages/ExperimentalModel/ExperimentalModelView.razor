@@ -1,7 +1,156 @@
-﻿@page "/experimentalModel/view/{id}"
+﻿@page "/experimentalModel/view/{Action}/{Id:int}"
+@inject ExperimentalModelService experimentalModelService
+@inject IDialogService dialogService
+@inject ISnackbar snackbar
+@inject NavigationManager navigation
 
-<h3>ExperimentalModelView</h3>
+@if (!Errored)
+{
+    if(ExperimentalModel is not null)
+    {
+        <MudForm @ref="Form">
+            <MudStack Row=true Justify="Justify.Center">
+                <MudPaper Width="70%">
+                    <MudStack Justify="Justify.Center" Class="pa-4">
+                        <MudTextField T="string"
+                                      Label="Nome"
+                                      @bind-Value="ExperimentalModel.Name"
+                                      Validation="@((string name) => ExperimentalModelDTO.ValidateName(name))"
+                                      Variant="Variant.Filled"
+                                      ReadOnly="@AType.IsVisualizationOnly()" />
+
+                        <MudTextField T="string"
+                                      Label="Descrição"
+                                      @bind-Value="ExperimentalModel.Description"
+                                      Validation="@((string description) => ExperimentalModelDTO.ValidateDescription(description))"
+                                      Variant="Variant.Filled"
+                                      Lines="5"
+                                      ReadOnly="@AType.IsVisualizationOnly()" />
+
+                        <MudButton FullWidth="true" Color="Color.Primary" OnClick="OpenDialogAsync" Variant="Variant.Filled">
+                            @(AType.IsVisualizationOnly() ? "Visualizar" : "Editar") modelo
+                        </MudButton>
+
+                        <div class="mt-2">
+                            <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="RegisterAsync">
+                                Cadastrar
+                            </MudButton>
+                        </div>
+
+                    </MudStack>
+                </MudPaper>
+            </MudStack>
+            
+        </MudForm>
+        
+    }
+    else
+    {
+        <MudStack Row="true" Justify="Justify.Center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Class="mt-lg-12" Indeterminate="true" />
+        </MudStack>
+    }
+}
+else
+{
+    <MudStack Row="true" Justify="Justify.Center">
+        <MudText>@Message</MudText>
+    </MudStack>
+}
+
+
+
+
 
 @code {
+    [CascadingParameter]
+    public AuthState AuthenticationState { get; set; } = default;
+    [Parameter]
+    public string Action { get; set; } = "";
+    [Parameter]
+    public int Id { get; set; } = 0;
 
+    private ActionType AType { get; set; }
+    private ExperimentalModelDTO.View ExperimentalModel { get; set; } = default!;
+    private bool Errored { get; set; } = false;
+    private string Message { get; set; } = "";
+    private MudForm Form { get; set; } = default!;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        AType = Action.ToActionType();
+
+        if (AType == ActionType.Create)
+        {
+            ExperimentalModel = new ExperimentalModelDTO.View();
+            return;
+        }
+
+        var experimentalModel = await experimentalModelService.GetExperimentalModelById(Id);
+
+        if (experimentalModel is null)
+        {
+            Errored = true;
+            Message = "Modelo experimental não encontrado.";
+            return;
+        }
+
+        ExperimentalModel = experimentalModel;
+    }
+
+    private async Task OpenDialogAsync()
+    {
+        var parameters = new DialogParameters<ModelDialog>
+        {
+            { x => x.ReadOnly, AType.IsVisualizationOnly() },
+            { x => x.Model, ExperimentalModel!.Model },
+        };
+
+        var options = new DialogOptions() { FullWidth = true, MaxWidth = MaxWidth.Large, CloseOnEscapeKey = false, BackdropClick = false };
+
+        var dialog = await dialogService.ShowAsync<ModelDialog>("", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            ExperimentalModel.Model = result.Data as string ?? "";
+        }
+    }
+
+    private async Task RegisterAsync()
+    {
+        if (!Form.IsValid)
+        {
+            await Form.Validate();
+            return;
+        }
+
+        if (AuthenticationState.User is null)
+        {
+            snackbar.Add("Você não está mais logado. Por favor, recarregue a página.", Severity.Warning);
+            return;
+        }
+
+        var toCreate = new ExperimentalModelDTO.Create
+        {
+            Name = ExperimentalModel.Name,
+            Model = ExperimentalModel.Model,
+            Description = ExperimentalModel.Description,
+            ExperimenterId = AuthenticationState.User.Id
+        };
+
+        var result = await experimentalModelService.CreateExperimentalModel(toCreate);
+
+        if (result.Success)
+        {
+            navigation.NavigateTo("/experimentalModel/index");
+        }
+        else
+        {
+            foreach(var error in result.Errors)
+            {
+                snackbar.Add(error, Severity.Error);
+            }
+        }
+    }
 }

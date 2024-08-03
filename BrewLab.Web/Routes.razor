@@ -41,6 +41,7 @@
 
         AuthenticationState.HasAttemptedAuthentication = true;
         AuthenticationState.IsAuthenticated = true;
+        AuthenticationState.User = user;
 
         navigation.ToReturnUrl();
     }
@@ -52,9 +53,5 @@
         navigation.NavigateTo("/account/login");
     }
 
-    public class AuthState
-    {
-        public bool HasAttemptedAuthentication { get; set; } = false;
-        public bool IsAuthenticated { get; set; } = false;
-    }
+
 }
