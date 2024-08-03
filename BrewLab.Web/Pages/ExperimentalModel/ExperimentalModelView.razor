@@ -3,6 +3,7 @@
 @inject IDialogService dialogService
 @inject ISnackbar snackbar
 @inject NavigationManager navigation
+@inject AuthService authService
 
 @if (!Errored)
 {
@@ -63,8 +64,6 @@ else
 
 
 @code {
-    [CascadingParameter]
-    public AuthState AuthenticationState { get; set; } = default;
     [Parameter]
     public string Action { get; set; } = "";
     [Parameter]
@@ -125,7 +124,7 @@ else
             return;
         }
 
-        if (AuthenticationState.User is null)
+        if (authService.User is null)
         {
             snackbar.Add("Você não está mais logado. Por favor, recarregue a página.", Severity.Warning);
             return;
@@ -136,7 +135,7 @@ else
             Name = ExperimentalModel.Name,
             Model = ExperimentalModel.Model,
             Description = ExperimentalModel.Description,
-            ExperimenterId = AuthenticationState.User.Id
+            ExperimenterId = authService.User.Id
         };
 
         var result = await experimentalModelService.CreateExperimentalModel(toCreate);

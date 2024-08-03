@@ -11,6 +11,9 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
     private readonly ExperimenterService _experimenterService = experimenterRepo;
     private readonly ProtectedLocalStorage _localStorage = localStorage;
 
+    public bool HasAttemptedAuthentication { get; set; } = false;
+    public ExperimenterDTO.NameAndId? User { get; set; }
+
     public string Token { get; set; } = "";
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -21,7 +24,13 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
 
         var user = await _experimenterService.Validate(Token);
 
-        if (user is null) return new AuthenticationState(principal);
+        if (user is null)
+        {
+            HasAttemptedAuthentication = true;
+            return new AuthenticationState(principal);
+        }
+
+        User = user;
 
         List<Claim> claims = [
             new Claim("Username", user.UserName),
@@ -32,6 +41,7 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
 
         principal.AddIdentity(identity);
 
+        HasAttemptedAuthentication = true;
         return new AuthenticationState(principal);
     }
 
@@ -42,6 +52,7 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
         if (!result.Success) return result;
 
         Token = result.Token!;
+        User = result.Experimenter;
 
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
 
@@ -55,6 +66,7 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
         if (!result.Success) return result;
 
         Token = result.Token!;
+        User = result.Experimenter;
 
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
 
@@ -68,6 +80,7 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
         if (result is null) return null;
 
         Token = token;
+        User = result;
 
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
 
@@ -77,6 +90,7 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
     public void Logout()
     {
         Token = "";
+        User = null;
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
 
@@ -102,11 +116,4 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
     {
         await _localStorage.DeleteAsync("Token");
     }
-}
-
-public class AuthState
-{
-    public bool HasAttemptedAuthentication { get; set; } = false;
-    public bool IsAuthenticated { get; set; } = false;
-    public ExperimenterDTO.NameAndId? User { get; set; }
 }

@@ -1,5 +1,6 @@
 ﻿@page "/experimentalModel/index"
 @inject ExperimentalModelService experimentalModelService
+@inject AuthService authService
 
 <MudPaper Width="100%">
     @if (ExperimentalModels is not null)
@@ -29,8 +30,6 @@
 </MudPaper>
 
 @code {
-    [CascadingParameter]
-    public AuthState AuthState { get; set; } = default!;
 
     private IEnumerable<ExperimentalModelDTO.View>? ExperimentalModels { get; set; }
     private bool Loading { get; set; } = true;
@@ -39,13 +38,13 @@
     {
         Loading = true;
 
-        if (AuthState.User is null)
+        if (authService.User is null)
         {
             Console.WriteLine("Deu merda! =w=");
             return;
         }
 
-        ExperimentalModels = experimentalModelService.GetExperimentalModelsByExperimenterId(AuthState.User.Id);
+        ExperimentalModels = experimentalModelService.GetExperimentalModelsByExperimenterId(authService.User.Id);
 
         Loading = false;
     }

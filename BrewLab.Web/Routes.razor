@@ -2,20 +2,17 @@
 @inject AuthService authService
 @inject NavigationManager navigation
 
-<CascadingValue Value="AuthenticationState">
-    <CascadingAuthenticationState>
-        <Router AppAssembly="typeof(Program).Assembly">
-            <Found Context="routeData">
-                <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
-                <FocusOnNavigate RouteData="routeData" Selector="h1" />
-            </Found>
-        </Router>
-    </CascadingAuthenticationState>
-</CascadingValue>
+<CascadingAuthenticationState>
+    <Router AppAssembly="typeof(Program).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+            <FocusOnNavigate RouteData="routeData" Selector="h1" />
+        </Found>
+    </Router>
+</CascadingAuthenticationState>
 
 
 @code {
-    private AuthState AuthenticationState { get; set; } = new();
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -39,17 +36,13 @@
             return;
         }
 
-        AuthenticationState.HasAttemptedAuthentication = true;
-        AuthenticationState.IsAuthenticated = true;
-        AuthenticationState.User = user;
-
         navigation.ToReturnUrl();
     }
 
     private async Task Reinitialize()
     {
         await authService.DeleteTokenLocalStorage();
-        AuthenticationState.HasAttemptedAuthentication = true;
+        authService.HasAttemptedAuthentication = true;
         navigation.NavigateTo("/account/login");
     }
 

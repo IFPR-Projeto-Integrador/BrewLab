@@ -1,5 +1,5 @@
-﻿@using static BrewLab.Web.Routes
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
+@inject AuthService authService
 
 <MudThemeProvider IsDarkMode="true"/>
 <MudPopoverProvider />
@@ -9,7 +9,7 @@
 <MudLayout>
     <MudAppBar Elevation="2">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerOpen = !DrawerOpen)" />
-        <MudText Typo="Typo.h5" Class="ml-3">BrewLab</MudText>
+        <MudText Typo="Typo.h5" Class="ml-3">BrewLab | @(authService.User is not null ? authService.User.UserName : "")</MudText>
         <MudSpacer />
         <AuthorizeView>
             <Authorized>
@@ -28,7 +28,7 @@
     
 
     <MudMainContent>
-        @if(AuthenticationState.HasAttemptedAuthentication)
+        @if(authService.HasAttemptedAuthentication)
         {
             <div class="ma-3">
                 @Body
@@ -46,8 +46,4 @@
 
 @code {
     private bool DrawerOpen { get; set; } = true;
-
-
-    [CascadingParameter]
-    private AuthState AuthenticationState { get; set; } = default!;
 }
