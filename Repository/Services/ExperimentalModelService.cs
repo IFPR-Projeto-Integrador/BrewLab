@@ -45,9 +45,9 @@ public class ExperimentalModelService(
         return returnModels;
     }
 
-    public async Task<ExperimentalModelDTO.View?> GetExperimentalModelById(int id)
+    public async Task<ExperimentalModelDTO.View?> GetExperimentalModelById(int id, int experimenterId)
     {
-        var dbModel = await FindSingle(m => m.Id == id);
+        var dbModel = await FindSingle(m => m.Id == id && m.ExperimenterId == experimenterId);
 
         if (dbModel is null) return null;
 
@@ -64,7 +64,7 @@ public class ExperimentalModelService(
     {
         if (!edit.Validate()) return ResultDTO.Result.InvalidDTO;
 
-        var dbModel = await FindSingle(m => m.Id == edit.Id);
+        var dbModel = await FindSingle(m => m.Id == edit.Id && m.ExperimenterId == edit.ExperimenterId);
 
         if (dbModel is null) return ResultDTO.Result.InvalidIdentification;
 
@@ -77,9 +77,9 @@ public class ExperimentalModelService(
         return ResultDTO.Result.Succeeded;
     }
 
-    public async Task<ResultDTO.Result> DeleteExperimentalModel(int id)
+    public async Task<ResultDTO.Result> DeleteExperimentalModel(int id, int experimenterId)
     {
-        var dbModel = await FindSingle(m => m.Id == id);
+        var dbModel = await FindSingle(m => m.Id == id && m.ExperimenterId == experimenterId);
 
         if (dbModel is null) return ResultDTO.Result.InvalidIdentification;
 

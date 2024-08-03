@@ -5,18 +5,34 @@
 <MudPaper Width="100%">
     @if (ExperimentalModels is not null)
     {
-        <MudTable Items="@ExperimentalModels" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@Loading" LoadingProgressColor="Color.Info">
+        <MudTable Items="@ExperimentalModels" 
+            Hover="true" 
+            Breakpoint="Breakpoint.Sm" 
+            Loading="@Loading" 
+            LoadingProgressColor="Color.Info">
             <HeaderContent>
-                <MudTh>Id</MudTh>
-                <MudTh>Nome</MudTh>
-                <MudTh>Modelo</MudTh>
-                <MudTh>Descrição</MudTh>
+                <MudTh><b>Id</b></MudTh>
+                <MudTh><b>Nome</b></MudTh>
+                <MudTh><b>Modelo</b></MudTh>
+                <MudTh><b>Descrição</b></MudTh>
+                <MudTh Style="text-align: center; width: 10%"><b>Ações</b></MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Id">@context.Id</MudTd>
-                <MudTd DataLabel="Name">@context.Name</MudTd>
-                <MudTd DataLabel="Model">@context.Model</MudTd>
-                <MudTd DataLabel="Description">@context.Description</MudTd>
+                <MudTd DataLabel="Nome">@context.Name</MudTd>
+                <MudTd DataLabel="Modelo">@context.Model</MudTd>
+                <MudTd DataLabel="Descrição">@context.Description</MudTd>
+                <MudTd DataLabel="Ações" Style="text-align: center">
+                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Size="Size.Medium"
+                             AriaLabel="Abrir menu de ações">
+                        <MudMenuItem Href="@($"/experimentalModel/view/view/{context.Id}")" 
+                            Icon="@Icons.Material.Rounded.RemoveRedEye" IconColor="Color.Info" A>Visualizar</MudMenuItem>
+                        <MudMenuItem Href="@($"/experimentalModel/view/edit/{context.Id}")"
+                            Icon="@Icons.Material.Rounded.EditNote" IconColor="Color.Warning">Editar</MudMenuItem>
+                        <MudMenuItem Href="@($"/experimentalModel/view/delete/{context.Id}")"
+                            Icon="@Icons.Material.Rounded.Cancel" IconColor="Color.Error">Deletar</MudMenuItem>
+                    </MudMenu>
+                </MudTd>
             </RowTemplate>
         </MudTable>
     }
@@ -38,11 +54,7 @@
     {
         Loading = true;
 
-        if (authService.User is null)
-        {
-            Console.WriteLine("Deu merda! =w=");
-            return;
-        }
+        if (authService.User is null) return;
 
         ExperimentalModels = experimentalModelService.GetExperimentalModelsByExperimenterId(authService.User.Id);
 

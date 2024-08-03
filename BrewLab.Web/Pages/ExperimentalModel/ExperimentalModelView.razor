@@ -33,9 +33,24 @@
                         </MudButton>
 
                         <div class="mt-2">
-                            <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="RegisterAsync">
-                                Cadastrar
-                            </MudButton>
+                            @if (AType == ActionType.Create)
+                            {
+                                <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="RegisterAsync">
+                                    Cadastrar
+                                </MudButton>
+                            }
+                            @if (AType == ActionType.Edit)
+                            {
+                                <MudButton Color="Color.Warning" Variant="Variant.Filled" OnClick="EditAsync">
+                                    Editar
+                                </MudButton>
+                            }
+                            @if (AType == ActionType.Delete)
+                            {
+                                <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="DeleteAsync">
+                                    Deletar
+                                </MudButton>
+                            }
                         </div>
 
                     </MudStack>
@@ -77,6 +92,13 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
+        if (authService.User is null)
+        {
+            Errored = true;
+            Message = "Você não está mais logado. Por favor recarregue a página.";
+            return;
+        }
+
         AType = Action.ToActionType();
 
         if (AType == ActionType.Create)
@@ -85,7 +107,7 @@ else
             return;
         }
 
-        var experimentalModel = await experimentalModelService.GetExperimentalModelById(Id);
+        var experimentalModel = await experimentalModelService.GetExperimentalModelById(Id, authService.User.Id);
 
         if (experimentalModel is null)
         {
@@ -126,7 +148,8 @@ else
 
         if (authService.User is null)
         {
-            snackbar.Add("Você não está mais logado. Por favor, recarregue a página.", Severity.Warning);
+            Errored = true;
+            Message = "Você não está mais logado. Por favor recarregue a página.";
             return;
         }
 
@@ -142,11 +165,77 @@ else
 
         if (result.Success)
         {
+            snackbar.Add("Experimento modelo criado com sucesso!", Severity.Success);
             navigation.NavigateTo("/experimentalModel/index");
         }
         else
         {
             foreach(var error in result.Errors)
+            {
+                snackbar.Add(error, Severity.Error);
+            }
+        }
+    }
+
+    private async Task EditAsync()
+    {
+        if (authService.User is null)
+        {
+            Errored = true;
+            Message = "Você não está mais logado. Por favor recarregue a página.";
+            return;
+        }
+
+        var toEdit = new ExperimentalModelDTO.Edit
+            {
+                Id = ExperimentalModel.Id,
+                Name = ExperimentalModel.Name,
+                Model = ExperimentalModel.Model,
+                Description = ExperimentalModel.Description,
+                ExperimenterId = authService.User.Id
+            };
+
+        var result = await experimentalModelService.EditExperimentalModel(toEdit);
+
+        if (result.Success)
+        {
+            snackbar.Add("Experimento modelo editado com sucesso!", Severity.Success);
+            navigation.NavigateTo("/experimentalModel/index");
+        }
+        else
+        {
+            foreach (var error in result.Errors)
+            {
+                snackbar.Add(error, Severity.Error);
+            }
+        }
+    }
+
+    private async Task DeleteAsync()
+    {
+        if (!Form.IsValid)
+        {
+            await Form.Validate();
+            return;
+        }
+
+        if (authService.User is null)
+        {
+            Errored = true;
+            Message = "Você não está mais logado. Por favor recarregue a página.";
+            return;
+        }
+
+        var result = await experimentalModelService.DeleteExperimentalModel(Id, authService.User.Id);
+
+        if (result.Success)
+        {
+            snackbar.Add("Experimento modelo deletado com sucesso!", Severity.Success);
+            navigation.NavigateTo("/experimentalModel/index");
+        }
+        else
+        {
+            foreach (var error in result.Errors)
             {
                 snackbar.Add(error, Severity.Error);
             }
