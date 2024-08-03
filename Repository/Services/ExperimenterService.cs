@@ -20,7 +20,7 @@ public class ExperimenterService(
 
         if (experimenter is null || experimenter.PasswordHash is null || experimenter.UserName is null)
         {
-            return ResultDTO.Auth.LoginOuSenhaIncorretos;
+            return ResultDTO.Auth.IncorrectLoginOrPassword;
         }
 
         var result = _hasher.VerifyHashedPassword(experimenter, experimenter.PasswordHash, login.Password);
@@ -37,7 +37,7 @@ public class ExperimenterService(
             };
         }
         else
-            return ResultDTO.Auth.LoginOuSenhaIncorretos;
+            return ResultDTO.Auth.IncorrectLoginOrPassword;
     }
 
     public async Task<ExperimenterDTO.NameAndId?> Validate(string token)
@@ -75,4 +75,6 @@ public class ExperimenterService(
             Experimenter = nameAndId
         };
     }
+
+    public bool ExperimenterExists(int id) => Exists(e => e.Id == id);
 }
