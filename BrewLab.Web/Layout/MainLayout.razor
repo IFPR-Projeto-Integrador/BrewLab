@@ -9,7 +9,7 @@
 <MudLayout>
     <MudAppBar Elevation="2">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerOpen = !DrawerOpen)" />
-        <MudText Typo="Typo.h5" Class="ml-3">BrewLab | @(authService.User is not null ? authService.User.UserName : "")</MudText>
+        <MudText Typo="Typo.h5" Class="ml-3">BrewLab @(authService.User is not null ? $"| {authService.User.UserName}" : "")</MudText>
         <MudSpacer />
         <AuthorizeView>
             <Authorized>
@@ -23,6 +23,9 @@
     </MudAppBar>
 
     <MudDrawer @bind-Open="DrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Navegar</MudText>
+        </MudDrawerHeader>
         <NavMenu />
     </MudDrawer>
     

@@ -4,37 +4,40 @@
 @attribute [AllowAnonymous]
 
 
+<MudStack Row="true" Justify="Justify.Center">
+    <MudPaper Width="70%" Class="pa-4">
+        <MudForm @ref="Form" @bind-IsValid="IsValid" Spacing="0">
 
-<MudPaper Class="pa-4">
-    <MudForm @ref="Form" @bind-IsValid="IsValid" Spacing="0" >
+            <MudTextField T="string"
+                          Label="Login"
+                          @bind-Value="Experimenter.UserName"
+                          Variant="Variant.Filled" />
+            <MudTextField T="string"
+                          Label="Senha"
+                          InputType="InputType.Password"
+                          @bind-Value="Experimenter.Password"
+                          Validation="@((string password) => ExperimenterDTO.ValidatePassword(password))"
+                          Variant="Variant.Filled" />
 
-        <MudTextField T="string"
-                      Label="Login"
-                      @bind-Value="Experimenter.UserName"
-                      Variant="Variant.Filled" />
-        <MudTextField T="string"
-                      Label="Senha"
-                      InputType="InputType.Password"
-                      @bind-Value="Experimenter.Password"
-                      Validation="@((string password) => ExperimenterDTO.ValidatePassword(password))"
-                      Variant="Variant.Filled" />
+            @foreach (var error in Errors)
+            {
+                <MudText Color="Color.Error">@error</MudText>
+            }
+            <div class="mt-4">
+                <MudButton @onclick="LoginAsync"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary">
+                    Login
+                </MudButton>
+            </div>
+            <div class="mt-2">
+                <MudLink Href="/account/register">Ou cadastre-se no lugar.</MudLink>
+            </div>
 
-        @foreach (var error in Errors)
-        {
-            <MudText Color="Color.Error">@error</MudText>
-        }
-        <div class="mt-4">
-            <MudButton @onclick="LoginAsync"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary">Login
-            </MudButton>
-        </div>
-        <div class="mt-2">
-            <MudLink Href="/account/register">Ou cadastre-se no lugar.</MudLink>
-        </div>
+        </MudForm>
+    </MudPaper>
+</MudStack>
 
-    </MudForm>
-</MudPaper>
 
 @code {
     private MudForm Form { get; set; } = default!;

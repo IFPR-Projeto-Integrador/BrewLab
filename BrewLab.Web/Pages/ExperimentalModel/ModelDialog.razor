@@ -1,8 +1,12 @@
 ﻿<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h5">
+            Modelo
+        </MudText>
+    </TitleContent>
     <DialogContent>
         <MudTextField T="string"
                       spellcheck="false"
-                      Label="Modelo"
                       @bind-Value="Model"
                       Validation="@((string model) => ExperimentalModelDTO.ValidateModel(model))"
                       Variant="Variant.Filled"

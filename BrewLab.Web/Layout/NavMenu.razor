@@ -1,16 +1,12 @@
 ﻿@inject NavigationManager navigation
 
-<MudDrawerHeader>
-    <MudText Typo="Typo.h6">Navegar</MudText>
-</MudDrawerHeader>
 <MudNavMenu>
     <AuthorizeView>
         <Authorized>
             <MudNavGroup Title="Experimentos modelos">
                 <MudNavLink Match="NavLinkMatch.All" IconColor="Color.Inherit" Href="/experimentalModel/index">Listagem</MudNavLink>
-                <MudNavLink Match="NavLinkMatch.All" IconColor="Color.Inherit" Href="/experimentalModel/view/create/0">Cadastrar</MudNavLink>
+                <MudNavLink Match="NavLinkMatch.All" IconColor="Color.Inherit" Href="/experimentalModel/view/create/0">Cadastro</MudNavLink>
             </MudNavGroup>
         </Authorized>
     </AuthorizeView>
-
 </MudNavMenu>

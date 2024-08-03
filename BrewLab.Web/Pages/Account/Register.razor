@@ -3,50 +3,53 @@
 @inject AuthService authService
 @attribute [AllowAnonymous]
 
-<MudPaper Class="pa-4">
-    <MudForm @ref="Form" @bind-IsValid="IsValid" Spacing="0">
-        @foreach(var error in Errors)
-        {
-            <MudText Color="Color.Error" Class="mv-1">@error</MudText>
-        }
+<MudStack Row="true" Justify="Justify.Center">
+    <MudPaper Width="70%" Class="pa-4">
+        <MudForm @ref="Form" @bind-IsValid="IsValid" Spacing="0">
+            @foreach (var error in Errors)
+            {
+                <MudText Color="Color.Error" Class="mv-1">@error</MudText>
+            }
 
-        <MudTextField T="string"
-                        Label="Login"
-                        Validation="@((string login) => ExperimenterDTO.ValidateUserName(login))"
-                        @bind-Value="Experimenter.UserName"
-                        Variant="Variant.Filled"/>
-        <MudTextField T="string"
-                        Label="Email" Required="true"
-                        InputType="InputType.Email"
-                        @bind-Value="Experimenter.Email"
-                        Validation="@((string email) => ExperimenterDTO.ValidateEmail(email))"
-                        Variant="Variant.Filled" />
-        <MudTextField T="string"
-                        Label="Nome"
-                        Validation="@((string name) => ExperimenterDTO.ValidateName(name))"
-                        @bind-Value="Experimenter.Name"
-                        Variant="Variant.Filled" />
-        <MudTextField T="string"
-                        Label="Senha"
-                        InputType="InputType.Password"
-                        @bind-Value="Experimenter.Password"
-                        Validation="@((string password) => ExperimenterDTO.ValidatePassword(password))"
-                        Variant="Variant.Filled" />
-        <MudTextField T="string"
-                        Label="Senha"
-                        InputType="InputType.Password"
-                        @bind-Value="Experimenter.RepeatPassword"
-                        Validation="@((string repeatPassword) => ExperimenterDTO.ValidateRepeatPassword(Experimenter.Password, repeatPassword))"
-                        Variant="Variant.Filled" />
+            <MudTextField T="string"
+                          Label="Login"
+                          Validation="@((string login) => ExperimenterDTO.ValidateUserName(login))"
+                          @bind-Value="Experimenter.UserName"
+                          Variant="Variant.Filled" />
+            <MudTextField T="string"
+                          Label="Email" Required="true"
+                          InputType="InputType.Email"
+                          @bind-Value="Experimenter.Email"
+                          Validation="@((string email) => ExperimenterDTO.ValidateEmail(email))"
+                          Variant="Variant.Filled" />
+            <MudTextField T="string"
+                          Label="Nome"
+                          Validation="@((string name) => ExperimenterDTO.ValidateName(name))"
+                          @bind-Value="Experimenter.Name"
+                          Variant="Variant.Filled" />
+            <MudTextField T="string"
+                          Label="Senha"
+                          InputType="InputType.Password"
+                          @bind-Value="Experimenter.Password"
+                          Validation="@((string password) => ExperimenterDTO.ValidatePassword(password))"
+                          Variant="Variant.Filled" />
+            <MudTextField T="string"
+                          Label="Senha"
+                          InputType="InputType.Password"
+                          @bind-Value="Experimenter.RepeatPassword"
+                          Validation="@((string repeatPassword) => ExperimenterDTO.ValidateRepeatPassword(Experimenter.Password, repeatPassword))"
+                          Variant="Variant.Filled" />
 
-        <div class="mt-4">
-            <MudButton OnClick="RegisterAsync"
-                Variant="Variant.Filled" 
-                Color="Color.Primary">Registrar</MudButton>
-        </div>
-            
-    </MudForm>
-</MudPaper>
+            <div class="mt-4">
+                <MudButton OnClick="RegisterAsync"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary">Registrar</MudButton>
+            </div>
+
+        </MudForm>
+    </MudPaper>
+</MudStack>
+
 
 
 @code {
