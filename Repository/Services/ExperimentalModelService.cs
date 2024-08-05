@@ -13,7 +13,7 @@ public class ExperimentalModelService(
     {
         ArgumentNullException.ThrowIfNull(nameof(create));
 
-        if (!_experimenterService.ExperimenterExists(create.ExperimenterId)) return ResultDTO.Result.InvalidIdentification;
+        if (!_experimenterService.Exists(create.ExperimenterId)) return ResultDTO.Result.InvalidIdentification;
         if (!create.Validate()) return ResultDTO.Result.InvalidDTO;
 
         var model = new ExperimentalModel
@@ -31,7 +31,7 @@ public class ExperimentalModelService(
 
     public IEnumerable<ExperimentalModelDTO.View>? GetExperimentalModelsByExperimenterId(int experimenterId)
     {
-        if (!_experimenterService.ExperimenterExists(experimenterId)) return null;
+        if (!_experimenterService.Exists(experimenterId)) return null;
 
         var dbModels = Find(m => m.ExperimenterId == experimenterId);
         var returnModels = dbModels.Select(m => new ExperimentalModelDTO.View
@@ -62,6 +62,8 @@ public class ExperimentalModelService(
 
     public async Task<ResultDTO.Result> EditExperimentalModel(ExperimentalModelDTO.Edit edit)
     {
+        ArgumentNullException.ThrowIfNull(nameof(edit));
+
         if (!edit.Validate()) return ResultDTO.Result.InvalidDTO;
 
         var dbModel = await FindSingle(m => m.Id == edit.Id && m.ExperimenterId == edit.ExperimenterId);

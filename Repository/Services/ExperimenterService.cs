@@ -75,6 +75,4 @@ public class ExperimenterService(
             Experimenter = nameAndId
         };
     }
-
-    public bool ExperimenterExists(int id) => Exists(e => e.Id == id);
 }

@@ -1,0 +1,78 @@
+﻿using BrewLab.Common.DTOs;
+using BrewLab.Common.DTOs.ExperimentalPlanning;
+using BrewLab.Models;
+using BrewLab.Models.Models;
+using BrewLab.Repository.Base;
+using Microsoft.EntityFrameworkCore;
+
+namespace BrewLab.Services.Services;
+public class ExperimentalPlanningService(
+    BrewLabContext context,
+    ExperimentalModelService experimentalModelService,
+    ExperimenterService experimenterService) : Repository<ExperimentalPlanning>(context)
+{
+    private BrewLabContext _context = context;
+    private ExperimentalModelService _experimentalModelService = experimentalModelService;
+    private ExperimenterService _experimenterService = experimenterService;
+
+    public async Task<ResultDTO.Result> CreateExperimentalPlanning(ExperimentalPlanningDTO.Create create)
+    {
+        ArgumentNullException.ThrowIfNull(nameof(create));
+
+        if (!_experimentalModelService.Exists(create.IdExperimentalModel)) return ResultDTO.Result.InvalidIdentification;
+        if (!create.Validate()) return ResultDTO.Result.InvalidDTO;
+
+        var planning = new ExperimentalPlanning
+        {
+            Name = create.Name,
+            ExperimentalMatrix = create.ExperimentalMatrix,
+            Description = create.Description,
+            IdExperimentalModel = create.IdExperimentalModel,
+        };
+
+        await Insert(planning);
+
+        return ResultDTO.Result.Succeeded;
+    }
+
+    public IEnumerable<ExperimentalPlanningDTO.View>? GetExperimentalPlanningsByExperimenterId(int experimenterId)
+    {
+        if (!_experimenterService.Exists(em => em.Id == experimenterId)) return null;
+
+        var dbPlannings = Find(ep => ep.ExperimentalModel?.ExperimenterId == experimenterId);
+
+        return dbPlannings.Select(ep => new ExperimentalPlanningDTO.View
+        {
+            Id = ep.Id,
+            Name = ep.Name,
+            ExperimentalMatrix = ep.ExperimentalMatrix,
+            Description = ep.Description,
+        });
+    }
+
+    public async Task<ExperimentalPlanningDTO.View?> GetExperimentalPlanningById(int id, int experimenterId)
+    {
+        var dbPlanning = await FindSingle(m => m.Id == id && m.ExperimentalModel?.ExperimenterId == experimenterId);
+
+        if (dbPlanning is null) return null;
+
+        return new ExperimentalPlanningDTO.View
+        {
+            Id = dbPlanning.Id,
+            Name = dbPlanning.Name,
+            ExperimentalMatrix = dbPlanning.ExperimentalMatrix,
+            Description = dbPlanning.Description,
+        };
+    }
+
+    public async Task<ResultDTO.Result> DeleteExperimentalPlanning(int id, int experimenterId)
+    {
+        var dbPlanning = await FindSingle(m => m.Id == id && m.ExperimentalModel?.ExperimenterId == experimenterId);
+
+        if (dbPlanning is null) return ResultDTO.Result.InvalidIdentification;
+
+        await Delete(dbPlanning);
+
+        return ResultDTO.Result.Succeeded;
+    }
+}

@@ -84,7 +84,7 @@ public abstract class Repository<TModel>(BrewLabContext context) where TModel : 
         await _context.SaveChangesAsync();
     }
 
-    protected bool Exists(Func<TModel, bool> filter)
+    public bool Exists(Func<TModel, bool> filter)
     {
         IQueryable<TModel> results = null!;
 
@@ -99,6 +99,24 @@ public abstract class Repository<TModel>(BrewLabContext context) where TModel : 
 
         return results
             .Where(filter)
+            .Any();
+    }
+
+    public bool Exists(int id)
+    {
+        IQueryable<TModel> results = null!;
+
+        if (TModelIs<IVirtualDeleteable>())
+            results = _context.Set<TModel>()
+                .Cast<IVirtualDeleteable>()
+                .Where(d => d.Deleted == false)
+                .Cast<TModel>();
+        else
+            results = _context.Set<TModel>()
+                .AsQueryable();
+
+        return results
+            .Where(m => m.Id == id)
             .Any();
     }
 
