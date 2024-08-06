@@ -26,7 +26,6 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
 
         if (user is null)
         {
-            HasAttemptedAuthentication = true;
             return new AuthenticationState(principal);
         }
 
@@ -41,7 +40,6 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
 
         principal.AddIdentity(identity);
 
-        HasAttemptedAuthentication = true;
         return new AuthenticationState(principal);
     }
 
@@ -55,6 +53,7 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
         User = result.Experimenter;
 
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+        HasAttemptedAuthentication = true;
 
         return result;
     }
@@ -69,6 +68,7 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
         User = result.Experimenter;
 
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+        HasAttemptedAuthentication = true;
 
         return result;
     }
@@ -83,6 +83,7 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
         User = result;
 
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+        HasAttemptedAuthentication = true;
 
         return result;
     }
@@ -92,6 +93,7 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
         Token = "";
         User = null;
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+        HasAttemptedAuthentication = true;
     }
 
 
