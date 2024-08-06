@@ -1,0 +1,254 @@
+﻿@page "/experimentalPlanning/view/{Action}/{Id:int}"
+@using System.Text.Json
+@inject ExperimentalPlanningService experimentalPlanningService
+@inject ExperimentalModelService experimentalModelService
+@inject IDialogService dialogService
+@inject ISnackbar snackbar
+@inject NavigationManager navigation
+@inject AuthService authService
+
+@if (!Errored)
+{
+    if (ExperimentalPlanning is not null)
+    {
+        <MudForm @ref="Form">
+            <MudStack Row=true Justify="Justify.Center">
+                <MudPaper Width="70%">
+                    <MudStack Justify="Justify.Center" Class="pa-4">
+                        <MudTextField T="string"
+                                      Label="Nome"
+                                      @bind-Value="ExperimentalPlanning.Name"
+                                      Validation="@((string name) => ExperimentalPlanningDTO.ValidateName(name))"
+                                      Variant="Variant.Filled"
+                                      ReadOnly="@AType.IsVisualizationOnly()" />
+
+                        <MudTextField T="string"
+                                      Label="Descrição"
+                                      @bind-Value="ExperimentalPlanning.Description"
+                                      Validation="@((string description) => ExperimentalPlanningDTO.ValidateDescription(description))"
+                                      Variant="Variant.Filled"
+                                      Lines="5"
+                                      ReadOnly="@AType.IsVisualizationOnly()" />
+
+                        <MudSelect T="int?"
+                                   Label="Modelo base"
+                                   @bind-Value="ExperimentalPlanning.IdExperimentalModel"
+                                   Validation="@((int id) => ExperimentalPlanningDTO.ValidateIdExperimentalModel(id))">
+                            @foreach (var model in ModelsDisplay)
+                            {
+                                <MudSelectItem T="int?" Value="model.Id">@(model.Id) - @(model.Name)</MudSelectItem>
+                            }       
+                        </MudSelect>
+
+                        <MudStack Row="true">
+                            <MudButton FullWidth="true" Color="Color.Primary" OnClick="OpenDialogAsync" Variant="Variant.Filled"
+                                       Disabled="@(ExperimentalMatrixFile is null)">
+                                Visualizar matriz experimental
+                            </MudButton>
+                            <MudFileUpload T="IBrowserFile" FilesChanged="FileChanged"
+                                           Accept=".json">
+                                <ActivatorContent>
+                                    <MudButton Variant="Variant.Filled"
+                                               Color="Color.Success"
+                                               StartIcon="@Icons.Material.Rounded.CloudUpload"
+                                               Disabled="@(ExperimentalMatrixFile is not null)">
+                                               Enviar
+                                    </MudButton>
+                                </ActivatorContent>
+                            </MudFileUpload>
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Error"
+                                       StartIcon="@Icons.Material.Rounded.AttachFile"
+                                       OnClick="async () => await FileChanged(null)"
+                                       Disabled="@(ExperimentalMatrixFile is null)">
+                                       Cancelar
+                            </MudButton>
+                        </MudStack>
+                        
+
+                        <div class="mt-2">
+                            @if (AType == ActionType.Create)
+                            {
+                                <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="RegisterAsync">
+                                    Cadastrar
+                                </MudButton>
+                            }
+                            @if (AType == ActionType.Delete)
+                            {
+                                <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="DeleteAsync">
+                                    Deletar
+                                </MudButton>
+                            }
+                        </div>
+
+                    </MudStack>
+                </MudPaper>
+            </MudStack>
+
+        </MudForm>
+
+    }
+    else
+    {
+        <MudStack Row="true" Justify="Justify.Center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Class="mt-lg-12" Indeterminate="true" />
+        </MudStack>
+    }
+}
+else
+{
+    <MudStack Row="true" Justify="Justify.Center">
+        <MudText>@Message</MudText>
+    </MudStack>
+}
+
+
+
+
+
+@code {
+    [Parameter]
+    public string Action { get; set; } = "";
+    [Parameter]
+    public int Id { get; set; } = 0;
+
+    private ActionType AType { get; set; }
+    private ExperimentalPlanningDTO.View ExperimentalPlanning { get; set; } = default!;
+
+    private bool Errored { get; set; } = false;
+    private string Message { get; set; } = "";
+    private MudForm Form { get; set; } = default!;
+
+    private IEnumerable<ExperimentalModelDTO.View> ModelsDisplay { get; set; } = default!;
+
+    private IBrowserFile? ExperimentalMatrixFile { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (authService.User is null)
+        {
+            Errored = true;
+            Message = "Você não está mais logado. Por favor recarregue a página.";
+            return;
+        }
+
+        AType = Action.ToActionType();
+
+        AType = AType == ActionType.Edit ? ActionType.View : AType;
+
+        if (AType == ActionType.Create)
+        {
+            ExperimentalPlanning = new ExperimentalPlanningDTO.View();
+            ModelsDisplay = experimentalModelService.GetExperimentalModelsByExperimenterId(authService.User.Id)!;
+            return;
+        }
+
+        var experimentalPlanning = await experimentalPlanningService.GetExperimentalPlanningById(Id, authService.User.Id);
+
+        if (experimentalPlanning is null)
+        {
+            Errored = true;
+            Message = "Planejamento experimental não encontrado.";
+            return;
+        }
+
+        ExperimentalPlanning = experimentalPlanning;
+
+        ModelsDisplay = experimentalModelService.GetExperimentalModelsByExperimenterId(authService.User.Id)!;
+    }
+
+    private async Task OpenDialogAsync()
+    {
+        var parameters = new DialogParameters<PlanningDialog>
+        {
+            { x => x.PlanningJson, ExperimentalPlanning!.ExperimentalMatrix },
+        };
+
+        var options = new DialogOptions() { FullWidth = true, MaxWidth = MaxWidth.Large, CloseOnEscapeKey = true, BackdropClick = true };
+
+        await dialogService.ShowAsync<PlanningDialog>("", parameters, options);
+    }
+
+    private async Task RegisterAsync()
+    {
+        if (!Form.IsValid)
+        {
+            await Form.Validate();
+            return;
+        }
+
+        if (authService.User is null)
+        {
+            Errored = true;
+            Message = "Você não está mais logado. Por favor recarregue a página.";
+            return;
+        }
+
+        var toCreate = new ExperimentalPlanningDTO.Create
+            {
+                Name = ExperimentalPlanning.Name,
+                ExperimentalMatrix = ExperimentalPlanning.ExperimentalMatrix,
+                Description = ExperimentalPlanning.Description,
+                IdExperimentalModel = ExperimentalPlanning.IdExperimentalModel!.Value
+            };
+
+        var result = await experimentalPlanningService.CreateExperimentalPlanning(toCreate);
+
+        if (result.Success)
+        {
+            snackbar.Add("Planejamento experimental criado com sucesso!", Severity.Success);
+            navigation.NavigateTo("/experimentalPlanning/index");
+        }
+        else
+        {
+            foreach (var error in result.Errors)
+            {
+                snackbar.Add(error, Severity.Error);
+            }
+        }
+    }
+
+    private async Task DeleteAsync()
+    {
+        if (!Form.IsValid)
+        {
+            await Form.Validate();
+            return;
+        }
+
+        if (authService.User is null)
+        {
+            Errored = true;
+            Message = "Você não está mais logado. Por favor recarregue a página.";
+            return;
+        }
+
+        var result = await experimentalPlanningService.DeleteExperimentalPlanning(Id, authService.User.Id);
+
+        if (result.Success)
+        {
+            snackbar.Add("Planejamento experimental deletado com sucesso!", Severity.Success);
+            navigation.NavigateTo("/experimentalPlanning/index");
+        }
+        else
+        {
+            foreach (var error in result.Errors)
+            {
+                snackbar.Add(error, Severity.Error);
+            }
+        }
+    }
+
+    private async Task FileChanged(IBrowserFile? file = null)
+    {
+        ExperimentalMatrixFile = file;
+
+        if (ExperimentalMatrixFile is null) return;
+
+        var stream = ExperimentalMatrixFile.OpenReadStream();
+        using var ms = new StreamReader(stream);
+        var json = await ms.ReadToEndAsync();
+
+        ExperimentalPlanning.ExperimentalMatrix = json;
+    }
+}

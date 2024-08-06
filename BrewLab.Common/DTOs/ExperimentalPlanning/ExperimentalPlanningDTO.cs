@@ -1,12 +1,12 @@
-﻿namespace BrewLab.Common.DTOs.ExperimentalPlanning;
+﻿namespace BrewLab.Common.DTOs;
 public static class ExperimentalPlanningDTO
 {
     public class Create
     {
-        public required string Name { get; set; } = "";
-        public required string Description { get; set; } = "";
-        public required string ExperimentalMatrix { get; set; } = "";
-        public required int IdExperimentalModel { get; set; } = 0;
+        public string Name { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string ExperimentalMatrix { get; set; } = "";
+        public int IdExperimentalModel { get; set; } = 0;
 
         public virtual bool Validate()
         {
@@ -21,15 +21,16 @@ public static class ExperimentalPlanningDTO
 
     public class View
     {
-        public required int Id { get; set; } = 0;
-        public required string Name { get; set; } = "";
-        public required string Description { get; set; } = "";
-        public required string ExperimentalMatrix { get; set; } = "";
+        public int Id { get; set; } = 0;
+        public string Name { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string ExperimentalMatrix { get; set; } = "";
+        public int? IdExperimentalModel { get; set; } = null;
     }
 
     public class Edit : Create
     {
-        public required int Id { get; set; }
+        public int Id { get; set; }
 
         public override bool Validate()
         {

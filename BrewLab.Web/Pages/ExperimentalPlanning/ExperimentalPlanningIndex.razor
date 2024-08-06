@@ -1,0 +1,82 @@
+﻿@page "/experimentalPlanning/index"
+@inject ExperimentalPlanningService experimentalPlanningService
+@inject AuthService authService
+@inject IDialogService dialogService
+
+<MudPaper Width="100%">
+    @if (ExperimentalPlannings is not null)
+    {
+        <MudTable Items="@ExperimentalPlannings"
+                  Hover="true"
+                  Breakpoint="Breakpoint.Sm"
+                  Loading="@Loading"
+                  LoadingProgressColor="Color.Info">
+            <HeaderContent>
+                <MudTh><b>Id</b></MudTh>
+                <MudTh><b>Nome</b></MudTh>
+                <MudTh><b>Matriz experimental</b></MudTh>
+                <MudTh>Modelo base</MudTh>
+                <MudTh><b>Descrição</b></MudTh>
+                <MudTh Style="text-align: center; width: 10%"><b>Ações</b></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                <MudTd DataLabel="Nome">@context.Name</MudTd>
+                <MudTd DataLabel="Matriz experimental">
+                    <MudButton Variant="Variant.Text"
+                               Color="Color.Info"
+                               OnClick="@(() => OpenModelAsync(@context.ExperimentalMatrix))">Visualizar matriz experimental</MudButton>
+                </MudTd>
+                <MudTd DataLabel="Modelo base">Placeholder</MudTd>
+                <MudTd DataLabel="Descrição">@context.Description</MudTd>
+                <MudTd DataLabel="Ações" Style="text-align: center">
+                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Color="Color.Primary" Size="Size.Medium"
+                             AriaLabel="Abrir menu de ações">
+                        <MudMenuItem Href="@($"/experimentalPlanning/view/view/{context.Id}")"
+                                     Icon="@Icons.Material.Rounded.RemoveRedEye" IconColor="Color.Info" A>Visualizar</MudMenuItem>
+                        <MudMenuItem Href="@($"/experimentalPlanning/view/edit/{context.Id}")"
+                                     Icon="@Icons.Material.Rounded.EditNote" IconColor="Color.Warning">Editar</MudMenuItem>
+                        <MudMenuItem Href="@($"/experimentalPlanning/view/delete/{context.Id}")"
+                                     Icon="@Icons.Material.Rounded.Cancel" IconColor="Color.Error">Deletar</MudMenuItem>
+                    </MudMenu>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+    else
+    {
+        <MudStack Row="true" Justify="Justify.Center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Class="mt-lg-12" Indeterminate="true" />
+        </MudStack>
+    }
+
+</MudPaper>
+
+@code {
+
+    private IEnumerable<ExperimentalPlanningDTO.View>? ExperimentalPlannings { get; set; }
+    private bool Loading { get; set; } = true;
+
+    protected override void OnParametersSet()
+    {
+        Loading = true;
+
+        if (authService.User is null) return;
+
+        ExperimentalPlannings = experimentalPlanningService.GetExperimentalPlanningsByExperimenterId(authService.User.Id);
+
+        Loading = false;
+    }
+
+    private async Task OpenModelAsync(string planningJson)
+    {
+        var parameters = new DialogParameters<PlanningDialog>
+        {
+            { x => x.PlanningJson, planningJson },
+        };
+
+        var options = new DialogOptions() { FullWidth = true, MaxWidth = MaxWidth.Large, CloseOnEscapeKey = true, BackdropClick = true };
+
+        await dialogService.ShowAsync<PlanningDialog>("", parameters, options);
+    }
+}

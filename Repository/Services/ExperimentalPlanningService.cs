@@ -1,9 +1,7 @@
 ﻿using BrewLab.Common.DTOs;
-using BrewLab.Common.DTOs.ExperimentalPlanning;
 using BrewLab.Models;
 using BrewLab.Models.Models;
 using BrewLab.Repository.Base;
-using Microsoft.EntityFrameworkCore;
 
 namespace BrewLab.Services.Services;
 public class ExperimentalPlanningService(
@@ -11,7 +9,6 @@ public class ExperimentalPlanningService(
     ExperimentalModelService experimentalModelService,
     ExperimenterService experimenterService) : Repository<ExperimentalPlanning>(context)
 {
-    private BrewLabContext _context = context;
     private ExperimentalModelService _experimentalModelService = experimentalModelService;
     private ExperimenterService _experimenterService = experimenterService;
 
@@ -27,7 +24,7 @@ public class ExperimentalPlanningService(
             Name = create.Name,
             ExperimentalMatrix = create.ExperimentalMatrix,
             Description = create.Description,
-            IdExperimentalModel = create.IdExperimentalModel,
+            ExperimentalModelId = create.IdExperimentalModel,
         };
 
         await Insert(planning);

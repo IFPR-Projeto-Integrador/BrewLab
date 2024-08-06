@@ -21,7 +21,7 @@ public class ExperimentalPlanning : IBrewLabModel<int>, ILoggedEntity, IVirtualD
     public bool Deleted { get; set; } = false;
 
     [Required]
-    public int IdExperimentalModel { get; set; }
+    public int ExperimentalModelId { get; set; }
     [Required]
     public ExperimentalModel? ExperimentalModel { get; set; }
 
