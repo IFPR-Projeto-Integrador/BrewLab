@@ -51,36 +51,14 @@ public abstract class Repository<TModel>(BrewLabContext context) where TModel : 
     {
         using var trans = await _context.Database.BeginTransactionAsync();
 
-        await DeleteWithoutSaving(model);
+        if (model is ILoggedEntity loggedModel)
+            loggedModel.UpdatedAt = DateTime.UtcNow;
+
+        _context.Remove(model);
 
         await _context.SaveChangesAsync();
 
         await trans.CommitAsync();
-    }
-
-    private async Task DeleteWithoutSaving(TModel model)
-    {
-        if (model is ILoggedEntity loggedModel)
-            loggedModel.UpdatedAt = DateTime.UtcNow;
-
-        if (model is IVirtualDeleteable vDeleteableModel)
-        {
-            vDeleteableModel.Deleted = true;
-
-            var virtualDeleteables = _context.Entry(model).Navigations
-                .Where(e => e.CurrentValue is not null && e.CurrentValue is TModel && e.CurrentValue is IVirtualDeleteable)
-                .Select(e => (TModel?)e.CurrentValue);
-
-            foreach (var toDelete in virtualDeleteables)
-            {
-                if (toDelete is not null)
-                    await DeleteWithoutSaving(toDelete);
-            }
-        }
-        else
-        {
-            _context.Remove(model);
-        }
     }
 
     protected async Task Update(TModel model)
