@@ -30,7 +30,7 @@ public static class ExperimentalPlanningDTO
 
     public class ViewWithExperimentalModels : View
     {
-        public ExperimentalModelDTO.View? Model { get; set; }
+        public ExperimentalModelDTO.View? ExperimentalModel { get; set; }
     }
 
     public class Edit : Create

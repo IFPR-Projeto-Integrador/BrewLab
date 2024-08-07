@@ -27,7 +27,7 @@
                                Color="Color.Info"
                                OnClick="@(() => OpenModelAsync(@context.ExperimentalMatrix))">Visualizar matriz experimental</MudButton>
                 </MudTd>
-                <MudTd DataLabel="Modelo base">@context.Name</MudTd>
+                <MudTd DataLabel="Modelo base">@(context.ExperimentalModel?.Name ?? "Erro")</MudTd>
                 <MudTd DataLabel="Descrição">@context.Description</MudTd>
                 <MudTd DataLabel="Ações" Style="text-align: center">
                     <MudMenu Icon="@Icons.Material.Filled.MoreVert" Color="Color.Primary" Size="Size.Medium"

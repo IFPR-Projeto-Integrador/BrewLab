@@ -48,7 +48,7 @@ public class ExperimentalPlanningService(
             Name = ep.Name,
             ExperimentalMatrix = ep.ExperimentalMatrix,
             Description = ep.Description,
-            Model = new ExperimentalModelDTO.View
+            ExperimentalModel = new ExperimentalModelDTO.View
             {
                 Id = ep.ExperimentalModel!.Id,
                 Name = ep.ExperimentalModel.Name,
