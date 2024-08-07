@@ -14,4 +14,6 @@ public class Experimenter : IdentityUser<int>, IBrewLabModel<int>, ILoggedEntity
     public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
     [Required]
     public bool Deleted { get; set; } = false;
+
+    public ICollection<ExperimentalModel>? ExperimentalModels { get; set; }
 }

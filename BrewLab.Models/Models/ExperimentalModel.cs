@@ -24,4 +24,6 @@ public class ExperimentalModel : IBrewLabModel<int>, IVirtualDeleteable, ILogged
     public int ExperimenterId { get; set; }
     [Required]
     public Experimenter? Experimenter { get; set; }
+
+    public ICollection<ExperimentalPlanning>? ExperimentalPlannings { get; set; }
 }

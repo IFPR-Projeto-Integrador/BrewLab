@@ -25,4 +25,6 @@ public class ExperimentalPlanning : IBrewLabModel<int>, ILoggedEntity, IVirtualD
     [Required]
     public ExperimentalModel? ExperimentalModel { get; set; }
 
+    public ICollection<Experiment>? Experiments { get; set; }
+
 }

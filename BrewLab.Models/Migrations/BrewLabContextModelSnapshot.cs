@@ -52,7 +52,7 @@ namespace BrewLab.Models.Migrations
 
                     b.HasIndex("ExperimentalPlanningId");
 
-                    b.ToTable("Experiments");
+                    b.ToTable("Experiments", (string)null);
                 });
 
             modelBuilder.Entity("BrewLab.Models.Models.ExperimentalModel", b =>
@@ -94,7 +94,7 @@ namespace BrewLab.Models.Migrations
 
                     b.HasIndex("ExperimenterId");
 
-                    b.ToTable("ExperimentalModels");
+                    b.ToTable("ExperimentalModels", (string)null);
                 });
 
             modelBuilder.Entity("BrewLab.Models.Models.ExperimentalPlanning", b =>
@@ -136,7 +136,7 @@ namespace BrewLab.Models.Migrations
 
                     b.HasIndex("ExperimentalModelId");
 
-                    b.ToTable("ExperimentalPlannings");
+                    b.ToTable("ExperimentalPlannings", (string)null);
                 });
 
             modelBuilder.Entity("BrewLab.Models.Models.Experimenter", b =>
