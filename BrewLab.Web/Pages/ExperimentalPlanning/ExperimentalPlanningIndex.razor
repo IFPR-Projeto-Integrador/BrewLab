@@ -15,7 +15,7 @@
                 <MudTh><b>Id</b></MudTh>
                 <MudTh><b>Nome</b></MudTh>
                 <MudTh><b>Matriz experimental</b></MudTh>
-                <MudTh>Modelo base</MudTh>
+                <MudTh><b>Modelo base</b></MudTh>
                 <MudTh><b>Descrição</b></MudTh>
                 <MudTh Style="text-align: center; width: 10%"><b>Ações</b></MudTh>
             </HeaderContent>
@@ -27,7 +27,7 @@
                                Color="Color.Info"
                                OnClick="@(() => OpenModelAsync(@context.ExperimentalMatrix))">Visualizar matriz experimental</MudButton>
                 </MudTd>
-                <MudTd DataLabel="Modelo base">Placeholder</MudTd>
+                <MudTd DataLabel="Modelo base">@context.Name</MudTd>
                 <MudTd DataLabel="Descrição">@context.Description</MudTd>
                 <MudTd DataLabel="Ações" Style="text-align: center">
                     <MudMenu Icon="@Icons.Material.Filled.MoreVert" Color="Color.Primary" Size="Size.Medium"
@@ -54,16 +54,16 @@
 
 @code {
 
-    private IEnumerable<ExperimentalPlanningDTO.View>? ExperimentalPlannings { get; set; }
+    private IEnumerable<ExperimentalPlanningDTO.ViewWithExperimentalModels>? ExperimentalPlannings { get; set; }
     private bool Loading { get; set; } = true;
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         Loading = true;
 
         if (authService.User is null) return;
 
-        ExperimentalPlannings = experimentalPlanningService.GetExperimentalPlanningsByExperimenterId(authService.User.Id);
+        ExperimentalPlannings = await experimentalPlanningService.GetExperimentalPlanningsByExperimenterIdAsync(authService.User.Id);
 
         Loading = false;
     }

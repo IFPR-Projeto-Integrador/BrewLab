@@ -2,11 +2,28 @@
 using BrewLab.Models.Base;
 using BrewLab.Models.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace BrewLab.Repository.Base;
 public abstract class Repository<TModel>(BrewLabContext context) where TModel : class, IBrewLabModel<int>
 {
     private readonly BrewLabContext _context = context;
+
+    protected IQueryable<TEntity> Get<TEntity>() where TEntity : class, IBrewLabModel<int>
+    {
+        if (TModelIs<IVirtualDeleteable>())
+        {
+            return _context.Set<TEntity>()
+                .Cast<IVirtualDeleteable>()
+                .Where(v => v.Deleted == false)
+                .Cast<TEntity>();
+        }
+        else
+        {
+            return _context.Set<TEntity>().AsQueryable();
+        }
+    }
+
     protected ICollection<TModel> Find(Func<TModel, bool> filter)
     {
         IQueryable<TModel>? result = null;

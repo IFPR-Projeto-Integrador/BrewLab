@@ -28,6 +28,11 @@ public static class ExperimentalPlanningDTO
         public int? IdExperimentalModel { get; set; } = null;
     }
 
+    public class ViewWithExperimentalModels : View
+    {
+        public ExperimentalModelDTO.View? Model { get; set; }
+    }
+
     public class Edit : Create
     {
         public int Id { get; set; }

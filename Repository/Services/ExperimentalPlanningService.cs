@@ -2,6 +2,7 @@
 using BrewLab.Models;
 using BrewLab.Models.Models;
 using BrewLab.Repository.Base;
+using Microsoft.EntityFrameworkCore;
 
 namespace BrewLab.Services.Services;
 public class ExperimentalPlanningService(
@@ -32,19 +33,28 @@ public class ExperimentalPlanningService(
         return ResultDTO.Result.Succeeded;
     }
 
-    public IEnumerable<ExperimentalPlanningDTO.View>? GetExperimentalPlanningsByExperimenterId(int experimenterId)
+    public async Task<IEnumerable<ExperimentalPlanningDTO.ViewWithExperimentalModels>?> GetExperimentalPlanningsByExperimenterIdAsync(int experimenterId)
     {
         if (!_experimenterService.Exists(em => em.Id == experimenterId)) return null;
 
-        var dbPlannings = Find(ep => ep.ExperimentalModel?.ExperimenterId == experimenterId);
+        var dbPlannings = Get<ExperimentalPlanning>()
+            .Where(e => e.ExperimentalModel!.ExperimenterId == experimenterId)
+            .Include(e => e.ExperimentalModel);
+            
 
-        return dbPlannings.Select(ep => new ExperimentalPlanningDTO.View
+        return await dbPlannings.Select(ep => new ExperimentalPlanningDTO.ViewWithExperimentalModels
         {
             Id = ep.Id,
             Name = ep.Name,
             ExperimentalMatrix = ep.ExperimentalMatrix,
             Description = ep.Description,
-        });
+            Model = new ExperimentalModelDTO.View
+            {
+                Id = ep.ExperimentalModel!.Id,
+                Name = ep.ExperimentalModel.Name,
+                Description = ep.ExperimentalModel.Description,
+            }
+        }).ToListAsync();
     }
 
     public async Task<ExperimentalPlanningDTO.View?> GetExperimentalPlanningById(int id, int experimenterId)

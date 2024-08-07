@@ -33,7 +33,8 @@
                         <MudSelect T="int?"
                                    Label="Modelo base"
                                    @bind-Value="ExperimentalPlanning.IdExperimentalModel"
-                                   Validation="@((int id) => ExperimentalPlanningDTO.ValidateIdExperimentalModel(id))">
+                                   Required="true"
+                                   RequiredError="Modelo base é obrigatório.">
                             @foreach (var model in ModelsDisplay)
                             {
                                 <MudSelectItem T="int?" Value="model.Id">@(model.Id) - @(model.Name)</MudSelectItem>
