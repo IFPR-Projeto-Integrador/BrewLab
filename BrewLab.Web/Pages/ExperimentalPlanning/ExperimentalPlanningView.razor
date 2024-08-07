@@ -50,14 +50,14 @@
                             <MudFileUpload T="IBrowserFile" FilesChanged="FileChanged"
                                            Accept=".json"
                                            Disabled="@(ExperimentalMatrixFile is not null
-                                                    || string.IsNullOrWhiteSpace(ExperimentalPlanning.ExperimentalMatrix)
+                                                    || !string.IsNullOrWhiteSpace(ExperimentalPlanning.ExperimentalMatrix)
                                                     || AType.IsVisualizationOnly())">
                                 <ActivatorContent>
                                     <MudButton Variant="Variant.Filled"
                                                Color="Color.Success"
                                                StartIcon="@Icons.Material.Rounded.CloudUpload"
                                                Disabled="@(ExperimentalMatrixFile is not null 
-                                                    || string.IsNullOrWhiteSpace(ExperimentalPlanning.ExperimentalMatrix) 
+                                                    || !string.IsNullOrWhiteSpace(ExperimentalPlanning.ExperimentalMatrix) 
                                                     || AType.IsVisualizationOnly())">
                                                Enviar
                                     </MudButton>
@@ -68,7 +68,7 @@
                                        StartIcon="@Icons.Material.Rounded.AttachFile"
                                        OnClick="async () => await FileChanged(null)"
                                        Disabled="@(ExperimentalMatrixFile is null 
-                                            || !string.IsNullOrWhiteSpace(ExperimentalPlanning.ExperimentalMatrix)
+                                            || string.IsNullOrWhiteSpace(ExperimentalPlanning.ExperimentalMatrix)
                                             || AType.IsVisualizationOnly())">
                                        Cancelar
                             </MudButton>
@@ -252,7 +252,11 @@ else
     {
         ExperimentalMatrixFile = file;
 
-        if (ExperimentalMatrixFile is null) return;
+        if (ExperimentalMatrixFile is null)
+        {
+            ExperimentalPlanning.ExperimentalMatrix = "";
+            return;    
+        }
 
         var stream = ExperimentalMatrixFile.OpenReadStream();
         using var ms = new StreamReader(stream);
