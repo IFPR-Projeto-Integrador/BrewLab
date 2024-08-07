@@ -34,7 +34,8 @@
                                    Label="Modelo base"
                                    @bind-Value="ExperimentalPlanning.IdExperimentalModel"
                                    Required="true"
-                                   RequiredError="Modelo base é obrigatório.">
+                                   RequiredError="Modelo base é obrigatório."
+                                   ReadOnly="@AType.IsVisualizationOnly()">
                             @foreach (var model in ModelsDisplay)
                             {
                                 <MudSelectItem T="int?" Value="model.Id">@(model.Id) - @(model.Name)</MudSelectItem>
@@ -43,16 +44,21 @@
 
                         <MudStack Row="true">
                             <MudButton FullWidth="true" Color="Color.Primary" OnClick="OpenDialogAsync" Variant="Variant.Filled"
-                                       Disabled="@(ExperimentalMatrixFile is null)">
+                                       Disabled="@(ExperimentalMatrixFile is null && string.IsNullOrWhiteSpace(ExperimentalPlanning.ExperimentalMatrix))">
                                 Visualizar matriz experimental
                             </MudButton>
                             <MudFileUpload T="IBrowserFile" FilesChanged="FileChanged"
-                                           Accept=".json">
+                                           Accept=".json"
+                                           Disabled="@(ExperimentalMatrixFile is not null
+                                                    || string.IsNullOrWhiteSpace(ExperimentalPlanning.ExperimentalMatrix)
+                                                    || AType.IsVisualizationOnly())">
                                 <ActivatorContent>
                                     <MudButton Variant="Variant.Filled"
                                                Color="Color.Success"
                                                StartIcon="@Icons.Material.Rounded.CloudUpload"
-                                               Disabled="@(ExperimentalMatrixFile is not null)">
+                                               Disabled="@(ExperimentalMatrixFile is not null 
+                                                    || string.IsNullOrWhiteSpace(ExperimentalPlanning.ExperimentalMatrix) 
+                                                    || AType.IsVisualizationOnly())">
                                                Enviar
                                     </MudButton>
                                 </ActivatorContent>
@@ -61,7 +67,9 @@
                                        Color="Color.Error"
                                        StartIcon="@Icons.Material.Rounded.AttachFile"
                                        OnClick="async () => await FileChanged(null)"
-                                       Disabled="@(ExperimentalMatrixFile is null)">
+                                       Disabled="@(ExperimentalMatrixFile is null 
+                                            || !string.IsNullOrWhiteSpace(ExperimentalPlanning.ExperimentalMatrix)
+                                            || AType.IsVisualizationOnly())">
                                        Cancelar
                             </MudButton>
                         </MudStack>

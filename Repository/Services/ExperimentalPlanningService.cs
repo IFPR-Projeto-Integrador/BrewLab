@@ -59,7 +59,8 @@ public class ExperimentalPlanningService(
 
     public async Task<ExperimentalPlanningDTO.View?> GetExperimentalPlanningById(int id, int experimenterId)
     {
-        var dbPlanning = await FindSingle(m => m.Id == id && m.ExperimentalModel?.ExperimenterId == experimenterId);
+        var dbPlanning = await Get<ExperimentalPlanning>()
+            .FirstOrDefaultAsync(m => m.Id == id && m.ExperimentalModel!.ExperimenterId == experimenterId);
 
         if (dbPlanning is null) return null;
 
@@ -69,6 +70,7 @@ public class ExperimentalPlanningService(
             Name = dbPlanning.Name,
             ExperimentalMatrix = dbPlanning.ExperimentalMatrix,
             Description = dbPlanning.Description,
+            IdExperimentalModel = dbPlanning.ExperimentalModelId
         };
     }
 
