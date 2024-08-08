@@ -47,7 +47,7 @@ public abstract class Repository<TModel>(BrewLabContext context) where TModel : 
 
     protected async Task<TModel?> FindSingle(Func<TModel, bool> filter) => Find(filter).FirstOrDefault();
 
-    protected async Task Delete(TModel model)
+    protected async Task Delete<TEntity>(TEntity model) where TEntity : class, IBrewLabModel<int>
     {
         using var trans = await _context.Database.BeginTransactionAsync();
 

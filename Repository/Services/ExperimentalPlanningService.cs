@@ -76,11 +76,19 @@ public class ExperimentalPlanningService(
 
     public async Task<ResultDTO.Result> DeleteExperimentalPlanning(int id, int experimenterId)
     {
-        var dbPlanning = await FindSingle(m => m.Id == id && m.ExperimentalModel?.ExperimenterId == experimenterId);
+        var dbPlanning = await Get<ExperimentalPlanning>()
+            .Where(m => m.Id == id && m.ExperimentalModel!.ExperimenterId == experimenterId)
+            .Include(m => m.Experiments)
+            .FirstOrDefaultAsync();
 
         if (dbPlanning is null) return ResultDTO.Result.InvalidIdentification;
 
         await Delete(dbPlanning);
+
+        foreach (var experiment in dbPlanning.Experiments!)
+        {
+            await Delete(experiment);
+        }
 
         return ResultDTO.Result.Succeeded;
     }

@@ -2,6 +2,7 @@
 using BrewLab.Models;
 using BrewLab.Models.Models;
 using BrewLab.Repository.Base;
+using Microsoft.EntityFrameworkCore;
 
 namespace BrewLab.Services.Services;
 public class ExperimentalModelService(
@@ -81,11 +82,25 @@ public class ExperimentalModelService(
 
     public async Task<ResultDTO.Result> DeleteExperimentalModel(int id, int experimenterId)
     {
-        var dbModel = await FindSingle(m => m.Id == id && m.ExperimenterId == experimenterId);
+        var dbModel = await Get<ExperimentalModel>()
+            .Where(m => m.Id == id && m.ExperimenterId == experimenterId)
+            .Include(m => m.ExperimentalPlannings!)
+            .ThenInclude(e => e!.Experiments)
+            .FirstOrDefaultAsync();
 
         if (dbModel is null) return ResultDTO.Result.InvalidIdentification;
 
         await Delete(dbModel);
+
+        foreach (var experimentalPlanning in dbModel.ExperimentalPlannings!)
+        {
+            await Delete(experimentalPlanning);
+
+            foreach (var experiment in experimentalPlanning.Experiments!)
+            {
+                await Delete(experiment);
+            }
+        }
 
         return ResultDTO.Result.Succeeded;
     }
