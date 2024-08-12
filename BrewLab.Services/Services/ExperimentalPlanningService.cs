@@ -4,7 +4,7 @@ using BrewLab.Models.Models;
 using BrewLab.Repository.Base;
 using Microsoft.EntityFrameworkCore;
 
-namespace BrewLab.Services.Services;
+namespace BrewLab.Services;
 public class ExperimentalPlanningService(
     BrewLabContext context,
     ExperimentalModelService experimentalModelService,

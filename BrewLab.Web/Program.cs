@@ -1,6 +1,6 @@
 using BrewLab.Models;
 using BrewLab.Models.Models;
-using BrewLab.Services.Services;
+using BrewLab.Services;
 using BrewLab.Web.Services;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor.Services;

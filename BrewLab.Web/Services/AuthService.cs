@@ -1,5 +1,5 @@
 ﻿using BrewLab.Common.DTOs;
-using BrewLab.Services.Services;
+using BrewLab.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using System.Security.Claims;

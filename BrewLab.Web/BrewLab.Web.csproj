@@ -13,7 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BrewLab.Common\BrewLab.Common.csproj" />
     <ProjectReference Include="..\BrewLab.Models\BrewLab.Models.csproj" />
-    <ProjectReference Include="..\Repository\BrewLab.Services.csproj" />
+    <ProjectReference Include="..\BrewLab.Services\BrewLab.Services.csproj" />
   </ItemGroup>
 
 </Project>

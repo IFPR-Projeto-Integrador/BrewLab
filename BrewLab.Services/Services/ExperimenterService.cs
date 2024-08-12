@@ -5,7 +5,7 @@ using BrewLab.Models.Models;
 using BrewLab.Repository.Base;
 using Microsoft.AspNetCore.Identity;
 
-namespace BrewLab.Services.Services;
+namespace BrewLab.Services;
 public class ExperimenterService(
     BrewLabContext context,
     PasswordHasher<Experimenter> hasher,
