@@ -3,6 +3,7 @@ using BrewLab.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using System.Security.Claims;
+using System.Security.Cryptography;
 
 namespace BrewLab.Web.Services;
 
@@ -101,10 +102,20 @@ public class AuthService(ExperimenterService experimenterRepo, ProtectedLocalSto
     // Não chamar antes do ciclo de vida de pós-renderização.
     public async Task<string?> GetTokenLocalStorage()
     {
-        var token = await localStorage.GetAsync<string>("Token");
-        if (!token.Success) return null;
+        ProtectedBrowserStorageResult<string>? token = null;
+        try
+        {
+            token = await localStorage.GetAsync<string>("Token");
+        }
+        catch (CryptographicException)
+        {
+            await localStorage.DeleteAsync("Token");
+            token = await localStorage.GetAsync<string>("Token");
+        }
+        
+        if (token is null || !token.Value.Success) return null;
 
-        return token.Value!;
+        return token.Value.Value!;
     }
 
     // Não chamar antes do ciclo de vida de pós-renderização.
