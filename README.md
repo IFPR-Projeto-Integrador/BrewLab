@@ -26,6 +26,7 @@ Após aberto o console, certifique que tanto o console quanto a solução esteja
 <img src="https://github.com/user-attachments/assets/fdd972ed-b302-460b-8d9d-5f201bcdc940" width="300" height="200">
 
 Com isso, rode o comando "Update-Database". O banco de dados deve ser automaticamente atualizado com todos os modelos.
+Certifique-se de que o banco Postgresql já exista, e que os dados para esse banco estejam presentes no arquivo .env.
 
 ### 5 - Inicie o projeto
 
