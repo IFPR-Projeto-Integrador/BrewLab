@@ -7,6 +7,7 @@ public static class Configs
     private static IConfiguration BuildConfiguration()
     {
         DotEnv.Fluent()
+            .WithEnvFiles(Path.Combine(Environment.CurrentDirectory, "..\\.env"))
             .Load();
 
         return new ConfigurationBuilder()
