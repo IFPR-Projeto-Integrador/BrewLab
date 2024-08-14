@@ -23,6 +23,7 @@ builder.Services.AddScoped<PasswordHasher<Experimenter>>();
 builder.Services.AddScoped<ExperimenterService>();
 builder.Services.AddScoped<ExperimentalModelService>();
 builder.Services.AddScoped<ExperimentalPlanningService>();
+builder.Services.AddScoped<ExperimentService>();
 builder.Services.AddScoped<AuthenticationStateProvider, AuthService>();
 builder.Services.AddScoped<AuthService>(sp => (AuthService) sp.GetRequiredService<AuthenticationStateProvider>());
 builder.Services.AddMudServices(config =>

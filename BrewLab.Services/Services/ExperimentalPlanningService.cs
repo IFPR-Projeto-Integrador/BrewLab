@@ -48,6 +48,7 @@ public class ExperimentalPlanningService(
             Name = ep.Name,
             ExperimentalMatrix = ep.ExperimentalMatrix,
             Description = ep.Description,
+            ExperimentsCount = ep.Experiments != null ? ep.Experiments.Count : 0,
             ExperimentalModel = new ExperimentalModelDTO.View
             {
                 Id = ep.ExperimentalModel!.Id,
@@ -60,18 +61,21 @@ public class ExperimentalPlanningService(
     public async Task<ExperimentalPlanningDTO.View?> GetExperimentalPlanningById(int id, int experimenterId)
     {
         var dbPlanning = await Get<ExperimentalPlanning>()
-            .FirstOrDefaultAsync(m => m.Id == id && m.ExperimentalModel!.ExperimenterId == experimenterId);
+            .Where(m => m.Id == id && m.ExperimentalModel!.ExperimenterId == experimenterId)
+            .Select(ep => new ExperimentalPlanningDTO.View 
+            {
+                Id = ep.Id,
+                Name = ep.Name,
+                ExperimentalMatrix = ep.ExperimentalMatrix,
+                Description = ep.Description,
+                ExperimentsCount = ep.Experiments != null ? ep.Experiments.Count : 0,
+                IdExperimentalModel = ep.ExperimentalModelId
+            })
+            .FirstOrDefaultAsync();
 
         if (dbPlanning is null) return null;
 
-        return new ExperimentalPlanningDTO.View
-        {
-            Id = dbPlanning.Id,
-            Name = dbPlanning.Name,
-            ExperimentalMatrix = dbPlanning.ExperimentalMatrix,
-            Description = dbPlanning.Description,
-            IdExperimentalModel = dbPlanning.ExperimentalModelId
-        };
+        return dbPlanning;
     }
 
     public async Task<ResultDTO.Result> DeleteExperimentalPlanning(int id, int experimenterId)

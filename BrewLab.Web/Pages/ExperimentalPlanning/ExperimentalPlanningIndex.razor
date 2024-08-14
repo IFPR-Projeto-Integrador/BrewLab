@@ -1,5 +1,6 @@
 ﻿@page "/experimentalPlanning/index"
 @inject ExperimentalPlanningService experimentalPlanningService
+@inject ExperimentService experimentService
 @inject AuthService authService
 @inject IDialogService dialogService
 
@@ -36,6 +37,8 @@
                                      Icon="@Icons.Material.Rounded.RemoveRedEye" IconColor="Color.Info" A>Visualizar</MudMenuItem>
                         <MudMenuItem Href="@($"/experimentalPlanning/view/delete/{context.Id}")"
                                      Icon="@Icons.Material.Rounded.Cancel" IconColor="Color.Error">Deletar</MudMenuItem>
+                        <MudMenuItem OnClick="@(() => Parse(@context.Id))" Disabled="@(context.ExperimentsCount != 0)"
+                                     Icon="@Icons.Material.Rounded.DocumentScanner" IconColor="Color.Primary">Parse</MudMenuItem>
                     </MudMenu>
                 </MudTd>
             </RowTemplate>
@@ -76,5 +79,12 @@
         var options = new DialogOptions() { FullWidth = true, MaxWidth = MaxWidth.Large, CloseOnEscapeKey = true, BackdropClick = true };
 
         await dialogService.ShowAsync<PlanningDialog>("", parameters, options);
+    }
+
+    private async Task Parse(int experimentalPlanningId)
+    {
+        if (authService.User is null) return;
+
+        await experimentService.Create(experimentalPlanningId, authService.User.Id);
     }
 }
