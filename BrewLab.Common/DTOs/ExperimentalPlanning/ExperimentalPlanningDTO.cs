@@ -25,13 +25,14 @@ public static class ExperimentalPlanningDTO
         public string Name { get; set; } = "";
         public string Description { get; set; } = "";
         public string ExperimentalMatrix { get; set; } = "";
-        public int? ExperimentsCount { get; set; } = null;
+        public IEnumerable<ExperimentDTO.View>? Experiments { get; set; } = null;
         public int? IdExperimentalModel { get; set; } = null;
     }
 
     public class ViewWithExperimentalModels : View
     {
         public ExperimentalModelDTO.View? ExperimentalModel { get; set; }
+        public bool ShowExperiments { get; set; } = false;
     }
 
     public class Edit : Create
