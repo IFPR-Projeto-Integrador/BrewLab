@@ -16,6 +16,7 @@
                 <MudTh><b>Id</b></MudTh>
                 <MudTh><b>Nome</b></MudTh>
                 <MudTh><b>Matriz experimental</b></MudTh>
+                <MudTh><b>Experimentos</b></MudTh>
                 <MudTh><b>Modelo base</b></MudTh>
                 <MudTh><b>Descrição</b></MudTh>
                 <MudTh Style="text-align: center; width: 10%"><b>Ações</b></MudTh>
@@ -28,6 +29,23 @@
                                Color="Color.Info"
                                OnClick="@(() => OpenModelAsync(@context.ExperimentalMatrix))">Visualizar matriz experimental</MudButton>
                 </MudTd>
+                <MudTd>
+                    @if (context.Experiments is null || context.Experiments?.Count() == 0)
+                    {
+                        <MudButton Variant="Variant.Text"
+                                   Color="Color.Success"
+                                   OnClick="@(async () => await Parse(context.Id))">Parsear Experimentos</MudButton>
+                    }
+                    else
+                    {
+                        <MudButton Variant="Variant.Text"
+                                   Color="Color.Info"
+                                   OnClick="@(() => ShowExperiments(context.Id))">
+                                   @(context.ShowExperiments ? "Fechar Experimentos" : "Visualizar Experimentos")
+                        </MudButton>
+                    }
+
+                </MudTd>
                 <MudTd DataLabel="Modelo base">@(context.ExperimentalModel?.Name ?? "Erro")</MudTd>
                 <MudTd DataLabel="Descrição">@context.Description</MudTd>
                 <MudTd DataLabel="Ações" Style="text-align: center">
@@ -37,11 +55,46 @@
                                      Icon="@Icons.Material.Rounded.RemoveRedEye" IconColor="Color.Info" A>Visualizar</MudMenuItem>
                         <MudMenuItem Href="@($"/experimentalPlanning/view/delete/{context.Id}")"
                                      Icon="@Icons.Material.Rounded.Cancel" IconColor="Color.Error">Deletar</MudMenuItem>
-                        <MudMenuItem OnClick="@(() => Parse(@context.Id))" Disabled="@(context.ExperimentsCount != 0)"
-                                     Icon="@Icons.Material.Rounded.DocumentScanner" IconColor="Color.Primary">Parse</MudMenuItem>
                     </MudMenu>
                 </MudTd>
             </RowTemplate>
+            <ChildRowContent>
+                @if (context.ShowExperiments)
+                {
+                    <MudTr>
+                        <td colspan="7" style="padding: 1rem 3rem 1rem 3rem; border: 1px solid gray">
+                            <MudCard Elevation="0">
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <MudText Typo="Typo.body1">Experimentos do planejamento: <strong>@context.Name</strong></MudText>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                                <MudCardContent Class="pa-0">
+                                    <MudTable Items="@context.Experiments" Context="ExperimentContext" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                        <ColGroup>
+                                            <col style="width: 10%;"/>
+                                            <col style="width: 90%;"/>
+                                        </ColGroup>
+                                        <HeaderContent>
+                                            <MudTh>Id</MudTh>
+                                            <MudTh Style="text-align: center;">Visualizar Experimento</MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate>
+                                            <MudTd DataLabel="Id">@ExperimentContext.Id</MudTd>
+                                            <MudTd DataLabel="Visualizar Experimento" Style="text-align: center;">
+                                                <MudButton Variant="Variant.Text"
+                                                           Color="Color.Info"
+                                                           OnClick="@(() => OpenModelAsync(ExperimentContext.ParsedModel))">Visualizar Experimento</MudButton>
+                                            </MudTd>
+                                        </RowTemplate>
+                                    </MudTable>
+                                </MudCardContent>
+                            </MudCard>
+                        </td>
+                    </MudTr>
+                }
+                
+            </ChildRowContent>
         </MudTable>
     }
     else
@@ -55,7 +108,7 @@
 
 @code {
 
-    private IEnumerable<ExperimentalPlanningDTO.ViewWithExperimentalModels>? ExperimentalPlannings { get; set; }
+    private List<ExperimentalPlanningDTO.ViewWithExperimentalModels>? ExperimentalPlannings { get; set; }
     private bool Loading { get; set; } = true;
 
     protected override async Task OnParametersSetAsync()
@@ -64,7 +117,9 @@
 
         if (authService.User is null) return;
 
-        ExperimentalPlannings = await experimentalPlanningService.GetExperimentalPlanningsByExperimenterIdAsync(authService.User.Id);
+        var result = await experimentalPlanningService.GetExperimentalPlanningsByExperimenterIdAsync(authService.User.Id);
+
+        if (result is not null) ExperimentalPlannings = result.ToList();
 
         Loading = false;
     }
@@ -81,10 +136,29 @@
         await dialogService.ShowAsync<PlanningDialog>("", parameters, options);
     }
 
+    private void ShowExperiments(int id)
+    {
+        var experiment = ExperimentalPlannings?.FirstOrDefault(ep => ep.Id == id);
+
+        if (experiment is null) return;
+
+        experiment.ShowExperiments = !experiment.ShowExperiments;
+    }
+
     private async Task Parse(int experimentalPlanningId)
     {
         if (authService.User is null) return;
 
-        await experimentService.Create(experimentalPlanningId, authService.User.Id);
+        var resultExperiment = await experimentService.Create(experimentalPlanningId, authService.User.Id);
+
+        if (!resultExperiment.Success) return;
+
+        var planning = await experimentalPlanningService.GetExperimentalPlanningById(experimentalPlanningId, authService.User.Id);
+
+        if (planning is null || ExperimentalPlannings is null) return;
+
+        var elementIndex = ExperimentalPlannings.FindIndex(e => e.Id == planning.Id);
+
+        ExperimentalPlannings[elementIndex] = planning;
     }
 }

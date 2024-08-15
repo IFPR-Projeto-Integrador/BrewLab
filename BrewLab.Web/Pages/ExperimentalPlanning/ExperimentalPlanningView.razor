@@ -219,12 +219,6 @@ else
 
     private async Task DeleteAsync()
     {
-        if (!Form.IsValid)
-        {
-            await Form.Validate();
-            return;
-        }
-
         if (authService.User is null)
         {
             Errored = true;

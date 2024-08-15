@@ -48,7 +48,12 @@ public class ExperimentalPlanningService(
             Name = ep.Name,
             ExperimentalMatrix = ep.ExperimentalMatrix,
             Description = ep.Description,
-            ExperimentsCount = ep.Experiments != null ? ep.Experiments.Count : 0,
+            Experiments = ep.Experiments != null ? ep.Experiments.Select(e => new ExperimentDTO.View
+            {
+                Id = e.Id,
+                ParsedModel = e.ParsedModel
+            }) : null,
+
             ExperimentalModel = new ExperimentalModelDTO.View
             {
                 Id = ep.ExperimentalModel!.Id,
@@ -58,17 +63,29 @@ public class ExperimentalPlanningService(
         }).ToListAsync();
     }
 
-    public async Task<ExperimentalPlanningDTO.View?> GetExperimentalPlanningById(int id, int experimenterId)
+    public async Task<ExperimentalPlanningDTO.ViewWithExperimentalModels?> GetExperimentalPlanningById(int id, int experimenterId)
     {
         var dbPlanning = await Get<ExperimentalPlanning>()
             .Where(m => m.Id == id && m.ExperimentalModel!.ExperimenterId == experimenterId)
-            .Select(ep => new ExperimentalPlanningDTO.View 
+            .Select(ep => new ExperimentalPlanningDTO.ViewWithExperimentalModels 
             {
                 Id = ep.Id,
                 Name = ep.Name,
                 ExperimentalMatrix = ep.ExperimentalMatrix,
                 Description = ep.Description,
-                ExperimentsCount = ep.Experiments != null ? ep.Experiments.Count : 0,
+                Experiments = ep.Experiments != null ? ep.Experiments.Select(e => new ExperimentDTO.View
+                {
+                    Id = e.Id,
+                    ParsedModel = e.ParsedModel
+                }) : null,
+
+                ExperimentalModel = new ExperimentalModelDTO.View
+                {
+                    Id = ep.ExperimentalModel!.Id,
+                    Name = ep.ExperimentalModel.Name,
+                    Description = ep.ExperimentalModel.Description,
+                },
+
                 IdExperimentalModel = ep.ExperimentalModelId
             })
             .FirstOrDefaultAsync();
