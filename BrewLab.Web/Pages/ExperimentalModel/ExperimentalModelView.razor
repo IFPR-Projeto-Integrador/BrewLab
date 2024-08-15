@@ -83,6 +83,8 @@ else
     public string Action { get; set; } = "";
     [Parameter]
     public int Id { get; set; } = 0;
+    [SupplyParameterFromQuery]
+    public int? CopyFrom { get; set; } = null;
 
     private ActionType AType { get; set; }
     private ExperimentalModelDTO.View ExperimentalModel { get; set; } = default!;
@@ -103,7 +105,27 @@ else
 
         if (AType == ActionType.Create)
         {
-            ExperimentalModel = new ExperimentalModelDTO.View();
+            if (CopyFrom is not null)
+            {
+                Id = CopyFrom.Value;
+
+                var queryExperimentalModel = await experimentalModelService.GetExperimentalModelById(Id, authService.User.Id);
+
+                if (queryExperimentalModel is not null)
+                {
+                    ExperimentalModel = queryExperimentalModel;
+                }
+                else
+                {
+                    snackbar.Add("Modelo para cópia é inválido ou não existe.", Severity.Error);
+                    ExperimentalModel = new ExperimentalModelDTO.View();
+                }
+            }
+            else
+            {
+                ExperimentalModel = new ExperimentalModelDTO.View();
+            }
+            
             return;
         }
 

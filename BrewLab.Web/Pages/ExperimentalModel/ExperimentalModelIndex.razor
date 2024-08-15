@@ -34,6 +34,8 @@
                             Icon="@Icons.Material.Rounded.RemoveRedEye" IconColor="Color.Info" A>Visualizar</MudMenuItem>
                         <MudMenuItem Href="@($"/experimentalModel/view/edit/{context.Id}")"
                             Icon="@Icons.Material.Rounded.EditNote" IconColor="Color.Warning">Editar</MudMenuItem>
+                        <MudMenuItem Href="@($"/experimentalModel/view/create/0?CopyFrom={context.Id}")"
+                                     Icon="@Icons.Material.Rounded.FileCopy" IconColor="Color.Warning">Copiar</MudMenuItem>
                         <MudMenuItem Href="@($"/experimentalModel/view/delete/{context.Id}")"
                             Icon="@Icons.Material.Rounded.Cancel" IconColor="Color.Error">Deletar</MudMenuItem>
                     </MudMenu>
