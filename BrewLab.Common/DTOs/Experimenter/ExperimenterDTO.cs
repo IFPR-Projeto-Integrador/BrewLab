@@ -36,6 +36,28 @@ public static class ExperimenterDTO
         }
     }
 
+    public class Account
+    {
+        public int Id { get; set; } = 0;
+        public string UserName { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string CurrentPassword { get; set; } = "";
+        public string NewPassword { get; set; } = "";
+        public string NewPasswordRepeat { get; set; } = "";
+        public string Name { get; set; } = "";
+
+        public bool Validate()
+        {
+            if (ValidateName(Name).Any()) return false;
+            if (ValidateUserName(UserName).Any()) return false;
+            if (ValidatePassword(CurrentPassword).Any()) return false;
+            if (ValidateRepeatPassword(NewPassword, NewPasswordRepeat).Any()) return false;
+            if (ValidateEmail(Email).Any()) return false;
+
+            return true;
+        }
+    }
+
     public class NameAndId
     {
         public int Id { get; set; } = 0;
