@@ -11,6 +11,9 @@ public static class ResultDTO
         public static readonly Result InvalidDTO = new() { Success = false, Errors = ["Modelo inválido."] };
         public static readonly Result InvalidIdentification = new() { Success = false, Errors = ["Identificador incorreto."] };
         public static readonly Result ParsingFail = new() { Success = false, Errors = ["Falha ao tentar realizar o parsing."] };
+        public static readonly Result IncorrectPassword = new() { Success = false, Errors = ["Senha incorreta."] };
+        public static readonly Result ExperimenterDoesNotExist = new() { Success = false, Errors = ["Experimentador não existe."] };
+        public static readonly Result RepeatPasswordDoesNotMatch = new() { Success = false, Errors = ["As senhas não são as mesmas."] };
     }
 
     public class Auth : Result
