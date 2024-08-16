@@ -15,6 +15,30 @@ public class ExperimenterService(
     private readonly PasswordHasher<Experimenter> _hasher = hasher;
     private readonly UserManager<Experimenter> _userManager = userManager;
 
+    public async Task<ResultDTO.Result> AttemptUpdate(ExperimenterDTO.Account account)
+    {
+        avar experimenter = await FindSingle(e => e.Id == account.Id);
+
+        if (experimenter is null || experimenter.PasswordHash is null) return ResultDTO.Result.ExperimenterDoesNotExist;
+
+        var result = _hasher.VerifyHashedPassword(experimenter, experimenter.PasswordHash, account.CurrentPassword);
+
+        if (result == PasswordVerificationResult.Failed) return ResultDTO.Result.IncorrectPassword;
+
+        experimenter.Email = account.Email;
+        experimenter.Name = account.Name;
+        if (!string.IsNullOrWhiteSpace(account.NewPassword) || !string.IsNullOrWhiteSpace(account.NewPasswordRepeat))
+        {
+            if (ExperimenterDTO.ValidateRepeatPassword(account.NewPassword, account.NewPasswordRepeat).Any()) return ResultDTO.Result.RepeatPasswordDoesNotMatch;
+
+            await _userManager.ChangePasswordAsync(experimenter, account.CurrentPassword, account.NewPassword);
+        }
+
+        await Update(experimenter);
+
+        return ResultDTO.Result.Succeeded;
+    }
+
     public async Task<ExperimenterDTO.Account?> GetById(int id)
     {
         var experimenter = await Get<Experimenter>()

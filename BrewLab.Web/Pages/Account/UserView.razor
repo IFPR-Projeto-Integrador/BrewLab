@@ -1,6 +1,8 @@
 ﻿@page "/account/view"
 @inject AuthService authService
 @inject ExperimenterService experimenterService
+@inject NavigationManager navManager
+@inject ISnackbar snackbar
 
 @if(CurrentExperimenter is not null)
 {
@@ -59,7 +61,7 @@
                                   HelperText="Para editar seu perfil, digite sua senha." />
 
                     <div class="mt-2">
-                        <MudButton Color="Color.Success" Variant="Variant.Filled" Disabled="!WasTouched">
+                        <MudButton Color="Color.Success" Variant="Variant.Filled" Disabled="!WasTouched" OnClick="UpdateAccount">
                             Editar
                         </MudButton>
                         <MudButton Color="Color.Warning" Variant="Variant.Filled" Disabled="!WasTouched" OnClick="SetExperimenter">
@@ -101,5 +103,19 @@ else
         CurrentExperimenter.NewPassword = "";
         CurrentExperimenter.NewPasswordRepeat = "";
         WasTouched = false;
+    }
+
+    private async Task UpdateAccount()
+    {
+        var result = await experimenterService.AttemptUpdate(CurrentExperimenter);
+
+        if (result != ResultDTO.Result.Succeeded)
+        {
+            snackbar.Add(result.Errors.FirstOrDefault(), Severity.Error);
+            return;
+        }
+
+        snackbar.Add("Dados alterados com sucesso!", Severity.Success);
+        navManager.NavigateTo("/");
     }
 }
