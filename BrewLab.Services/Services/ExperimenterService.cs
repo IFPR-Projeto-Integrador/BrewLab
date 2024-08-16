@@ -4,6 +4,7 @@ using BrewLab.Models;
 using BrewLab.Models.Models;
 using BrewLab.Repository.Base;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace BrewLab.Services;
 public class ExperimenterService(
@@ -13,6 +14,23 @@ public class ExperimenterService(
 {
     private readonly PasswordHasher<Experimenter> _hasher = hasher;
     private readonly UserManager<Experimenter> _userManager = userManager;
+
+    public async Task<ExperimenterDTO.Account?> GetById(int id)
+    {
+        var experimenter = await Get<Experimenter>()
+            .Where(e => e.Id == id)
+            .Select(e => new ExperimenterDTO.Account()
+            {
+                Id = e.Id,
+                UserName = e.UserName!,
+                Name = e.Name,
+                Email = e.Email!,
+                CurrentPassword = "",
+            })
+            .FirstOrDefaultAsync();
+
+        return experimenter;
+    }
 
     public async Task<ResultDTO.Auth> Login(ExperimenterDTO.Login login)
     {
