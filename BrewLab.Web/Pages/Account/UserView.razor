@@ -3,6 +3,7 @@
 @inject ExperimenterService experimenterService
 @inject NavigationManager navManager
 @inject ISnackbar snackbar
+@inject IDialogService dialogService
 
 @if(CurrentExperimenter is not null)
 {
@@ -61,11 +62,14 @@
                                   HelperText="Para editar seu perfil, digite sua senha." />
 
                     <div class="mt-2">
-                        <MudButton Color="Color.Success" Variant="Variant.Filled" Disabled="!WasTouched" OnClick="UpdateAccount">
+                        <MudButton Color="Color.Success" Variant="Variant.Filled" Disabled="!WasTouched" OnClick="UpdateAccountAsync">
                             Editar
                         </MudButton>
-                        <MudButton Color="Color.Warning" Variant="Variant.Filled" Disabled="!WasTouched" OnClick="SetExperimenter">
+                        <MudButton Color="Color.Warning" Variant="Variant.Filled" Disabled="!WasTouched" OnClick="SetExperimenterASync">
                             Resetar
+                        </MudButton>
+                        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="DeleteAccountAsync">
+                            Desativar
                         </MudButton>
                     </div>
 
@@ -90,10 +94,10 @@ else
 
     protected async override Task OnInitializedAsync()
     {
-        await SetExperimenter();
+        await SetExperimenterASync();
     }
 
-    private async Task SetExperimenter()
+    private async Task SetExperimenterASync()
     {
         var experimenter = await experimenterService.GetById(authService.User!.Id);
 
@@ -105,7 +109,7 @@ else
         WasTouched = false;
     }
 
-    private async Task UpdateAccount()
+    private async Task UpdateAccountAsync()
     {
         var result = await experimenterService.AttemptUpdate(CurrentExperimenter);
 
@@ -117,5 +121,17 @@ else
 
         snackbar.Add("Dados alterados com sucesso!", Severity.Success);
         navManager.NavigateTo("/");
+    }
+
+    private async Task DeleteAccountAsync()
+    {
+        var parameters = new DialogParameters<AccountDeactivateDialog>
+        {
+            { x => x.Password, CurrentExperimenter.CurrentPassword },
+        };
+
+        var options = new DialogOptions() { MaxWidth = MaxWidth.Medium, CloseOnEscapeKey = true, BackdropClick = true };
+
+        await dialogService.ShowAsync<AccountDeactivateDialog>("Desativação de conta", parameters, options);
     }
 }

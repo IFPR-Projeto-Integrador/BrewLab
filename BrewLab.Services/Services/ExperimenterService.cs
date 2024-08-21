@@ -15,9 +15,24 @@ public class ExperimenterService(
     private readonly PasswordHasher<Experimenter> _hasher = hasher;
     private readonly UserManager<Experimenter> _userManager = userManager;
 
+    public async Task<ResultDTO.Result> DeleteAccountAsync(int experimenterId, string password)
+    {
+        var experimenter = await FindSingle(e => e.Id == experimenterId);
+
+        if (experimenter is null || experimenter.PasswordHash is null) return ResultDTO.Result.ExperimenterDoesNotExist;
+
+        var result = _hasher.VerifyHashedPassword(experimenter, experimenter.PasswordHash, password);
+
+        if (result == PasswordVerificationResult.Failed) return ResultDTO.Result.IncorrectPassword;
+
+        await Delete(experimenter);
+
+        return ResultDTO.Result.Succeeded;
+    }
+
     public async Task<ResultDTO.Result> AttemptUpdate(ExperimenterDTO.Account account)
     {
-        avar experimenter = await FindSingle(e => e.Id == account.Id);
+        var experimenter = await FindSingle(e => e.Id == account.Id);
 
         if (experimenter is null || experimenter.PasswordHash is null) return ResultDTO.Result.ExperimenterDoesNotExist;
 
