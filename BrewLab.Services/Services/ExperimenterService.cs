@@ -3,17 +3,25 @@ using BrewLab.Common.JWT;
 using BrewLab.Models;
 using BrewLab.Models.Models;
 using BrewLab.Repository.Base;
+using Mailjet.Client;
+using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
+using BrewLab.Common.Configuration;
+using BrewLab.Common.DTOs;
 
 namespace BrewLab.Services;
 public class ExperimenterService(
     BrewLabContext context,
     PasswordHasher<Experimenter> hasher,
-    UserManager<Experimenter> userManager) : Repository<Experimenter>(context)
+    UserManager<Experimenter> userManager,
+    IHttpClientFactory _httpClientFactory) : Repository<Experimenter>(context)
 {
     private readonly PasswordHasher<Experimenter> _hasher = hasher;
     private readonly UserManager<Experimenter> _userManager = userManager;
+    private readonly IHttpClientFactory _httpClientFactory = _httpClientFactory;
+    private readonly EmailConfig Email = Configs.Email;
 
     public async Task<ResultDTO.Result> DeleteAccountAsync(int experimenterId, string password)
     {
@@ -131,5 +139,92 @@ public class ExperimenterService(
             Token = Token.GenerateToken(nameAndId),
             Experimenter = nameAndId
         };
+    }
+
+    public async Task<ResultDTO.Result> RedefinePasswordAsync(string newPassword, string newPasswordRepeat, int experimenterId)
+    {
+        var experimenter = await FindSingle(e => e.Id == experimenterId);
+
+        if (experimenter is null) return ResultDTO.Result.ExperimenterDoesNotExist;
+
+        if (ExperimenterDTO.ValidateRepeatPassword(newPassword, newPasswordRepeat).Any()) return ResultDTO.Result.RepeatPasswordDoesNotMatch;
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(experimenter);
+
+        var result = await _userManager.ResetPasswordAsync(experimenter, token, newPassword);
+
+        if (!result.Succeeded) return ResultDTO.Result.UnknownError;
+
+        return ResultDTO.Result.Succeeded;
+    }
+
+    public async Task<ResultDTO.Result> SendPasswordRecoveryEmailAsync(string username, string baseUrl)
+    {
+        var experimenter = await FindSingle(e => e.UserName == username);
+
+        if (experimenter is null || experimenter.UserName is null || experimenter.Email is null) return ResultDTO.Result.ExperimenterDoesNotExist;
+
+        var nameAndId = new ExperimenterDTO.NameAndId
+        {
+            Id = experimenter.Id,
+            UserName = experimenter.UserName
+        };
+
+        var token = Token.GenerateToken(nameAndId);
+
+        var result = await SendEmailAsync(Email.Email, Email.NomeEmail, experimenter.Email, experimenter.Name, $"{baseUrl}/{token}");
+
+        if (!result) return ResultDTO.Result.CouldNotSendEmail;
+        else return ResultDTO.Result.Succeeded;
+    }
+
+    private async Task<bool> SendEmailAsync(string from, string fromName, string to, string toName, string link)
+    {
+        try
+        {
+            var client = _httpClientFactory.CreateClient("EmailClient");
+
+            var request = @"{
+                ""Messages"": [
+                    {
+                        ""From"": {
+                            ""Email"": ""{0}"",
+                            ""Name"": ""{1}""
+                        },
+                        ""To"": [
+                            {
+                                ""Email"": ""{2}"",
+                                ""Name"": ""{3}""
+                            }
+                        ],
+                        ""Subject"": ""Your email flight plan!"",
+                        ""TextPart"": ""Dear passenger 1, welcome to Mailjet! May the delivery force be with you!"",
+                        ""HTMLPart"": ""<h3>Olá, {4}</h3><br />Clique no endereço a seguir para redefinir sua senha: {5}""
+                    }
+                ]
+            }";
+
+            request = string.Format(request, from, fromName, to, toName, link);
+
+            var content = new StringContent(request, Encoding.UTF8, "application/json");
+
+            var response = await client.PostAsync("send", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Email enviado com sucesso.");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine($"Falha ao enviar email. Código: {response.StatusCode}");
+                return false;
+            }
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return false;
+        }
     }
 }
