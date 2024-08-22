@@ -45,5 +45,20 @@ public static class Configs
         }
     }
 
+    public static EmailConfig Email
+    {
+        get
+        {
+            var _config = BuildConfiguration();
+            var configs = _config.Get<EmailConfig>();
+
+            if (configs is null) throw new ArgumentNullException(nameof(configs));
+
+            configs.Verify();
+
+            return configs;
+        }
+    }
+
 
 }
