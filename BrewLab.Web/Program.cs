@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Identity;
 using MudBlazor.Services;
 using BrewLab.Web;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using MudBlazor;
+using System.Text;
+using BrewLab.Common.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,17 @@ builder.Services.AddDbContext<BrewLabContext>();
 builder.Services.AddIdentity<Experimenter, IdentityRole<int>>()
     .AddEntityFrameworkStores<BrewLabContext>();
 
+builder.Services.AddHttpClient("EmailClient", client =>
+{
+    var emailConfig = Configs.Email;
+
+    client.BaseAddress = new Uri("https://api.mailjet.com/v3.1");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+    client.Timeout = TimeSpan.FromSeconds(30);
+    var byteArray = Encoding.ASCII.GetBytes($"{emailConfig.ApiKeyPublic}:{emailConfig.ApiKeyPrivate}");
+    client.DefaultRequestHeaders.Authorization = 
+        new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+});
 builder.Services.AddScoped<PasswordHasher<Experimenter>>();
 builder.Services.AddScoped<ExperimenterService>();
 builder.Services.AddScoped<ExperimentalModelService>();
