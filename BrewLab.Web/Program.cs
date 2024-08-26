@@ -24,7 +24,7 @@ builder.Services.AddHttpClient("EmailClient", client =>
 {
     var emailConfig = Configs.Email;
 
-    client.BaseAddress = new Uri("https://api.mailjet.com/v3.1");
+    client.BaseAddress = new Uri("https://api.mailjet.com");
     client.DefaultRequestHeaders.Add("Accept", "application/json");
     client.Timeout = TimeSpan.FromSeconds(30);
     var byteArray = Encoding.ASCII.GetBytes($"{emailConfig.ApiKeyPublic}:{emailConfig.ApiKeyPrivate}");

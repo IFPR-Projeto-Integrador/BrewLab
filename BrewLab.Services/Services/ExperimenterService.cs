@@ -3,13 +3,11 @@ using BrewLab.Common.JWT;
 using BrewLab.Models;
 using BrewLab.Models.Models;
 using BrewLab.Repository.Base;
-using Mailjet.Client;
-using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using BrewLab.Common.Configuration;
-using BrewLab.Common.DTOs;
+using System.Text.Json;
 
 namespace BrewLab.Services;
 public class ExperimenterService(
@@ -172,7 +170,7 @@ public class ExperimenterService(
 
         var token = Token.GenerateToken(nameAndId);
 
-        var result = await SendEmailAsync(Email.Email, Email.NomeEmail, experimenter.Email, experimenter.Name, $"{baseUrl}/{token}");
+        var result = await SendEmailAsync(Email.Email, Email.NomeEmail, experimenter.Email, experimenter.Name, $"{baseUrl}account/confirmPasswordReset/{token}");
 
         if (!result) return ResultDTO.Result.CouldNotSendEmail;
         else return ResultDTO.Result.Succeeded;
@@ -184,46 +182,38 @@ public class ExperimenterService(
         {
             var client = _httpClientFactory.CreateClient("EmailClient");
 
-            var request = @"{
-                ""Messages"": [
-                    {
-                        ""From"": {
-                            ""Email"": ""{0}"",
-                            ""Name"": ""{1}""
-                        },
-                        ""To"": [
-                            {
-                                ""Email"": ""{2}"",
-                                ""Name"": ""{3}""
-                            }
-                        ],
-                        ""Subject"": ""Your email flight plan!"",
-                        ""TextPart"": ""Dear passenger 1, welcome to Mailjet! May the delivery force be with you!"",
-                        ""HTMLPart"": ""<h3>Olá, {4}</h3><br />Clique no endereço a seguir para redefinir sua senha: {5}""
-                    }
-                ]
-            }";
+            var messages = new
+            {
+                Messages = new[]
+                {
+                        new
+                        {
+                            From = new { Email = from, Name = fromName },
+                            To = new[] { new { Email = to, Name = toName } },
+                            Subject = "Recuperação de senha BrewLab",
+                            TextPart = "Dear passenger 1, welcome to Mailjet! May the delivery force be with you!",
+                            HTMLPart = $"<h3>Olá, {toName}</h3><br />Clique <a href='{link}'>aqui</a> para redefinir sua senha.</br>Caso não tenha sido você que requisitou uma recuperação de senha, ignore este email."
+                        }
+                }
+            };
 
-            request = string.Format(request, from, fromName, to, toName, link);
+            var request = JsonSerializer.Serialize(messages);
 
             var content = new StringContent(request, Encoding.UTF8, "application/json");
 
-            var response = await client.PostAsync("send", content);
+            var response = await client.PostAsync("v3.1/send", content);
 
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine("Email enviado com sucesso.");
                 return true;
             }
             else
             {
-                Console.WriteLine($"Falha ao enviar email. Código: {response.StatusCode}");
                 return false;
             }
         }
         catch(Exception ex)
         {
-            Console.WriteLine(ex.Message);
             return false;
         }
     }
