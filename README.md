@@ -11,8 +11,23 @@ Clone o repositório através do Visual Studio: </br>
 
 ### 3 - Crie a .env
 
-Crie um arquivo .env com os seguintes campos:
-![image](https://github.com/user-attachments/assets/94dea2b6-e969-4b90-bb55-c1350e374c56)
+Crie um arquivo .env com os seguintes campos, removendo os comentários em #:
+```txt
+DatabaseName=""
+User=""
+Host=""
+Password=""
+
+SymmetricSecurityKey="" # Chave de segurança para criação de tokens JWT
+JWTTokenDuration=0 # Duração em minutos dos tokens JWT
+JWTIssuer="" # Claim do issuer do Token JWT
+JWTAudience="" # Claim da audience do Token JWT
+
+ApiKeyPublic="" # Chave API pública do MailJet (Serviço de email usado pela aplicação)
+ApiKeyPrivate="" # Chave API privada do MailJet (Serviço de email usado pela aplicação)
+Email="" # Email que será usado para enviar as confirmações de recuperação de senha
+NomeEmail="" # Nome do email
+```
 
 O arquivo .env deve estar localizado dentro da pasta principal da solução, onde estão as pastas que contem os .csproj:
 <img src="https://github.com/user-attachments/assets/8c87522e-33c8-4ba4-87eb-3c338e23c59a"  width="300" height="200">
