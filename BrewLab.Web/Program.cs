@@ -18,7 +18,8 @@ builder.Services.AddRazorComponents()
 builder.Services.AddDbContext<BrewLabContext>();
 
 builder.Services.AddIdentity<Experimenter, IdentityRole<int>>()
-    .AddEntityFrameworkStores<BrewLabContext>();
+    .AddEntityFrameworkStores<BrewLabContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddHttpClient("EmailClient", client =>
 {

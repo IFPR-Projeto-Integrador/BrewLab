@@ -170,7 +170,7 @@ public class ExperimenterService(
 
         var token = Token.GenerateToken(nameAndId);
 
-        var result = await SendEmailAsync(Email.Email, Email.NomeEmail, experimenter.Email, experimenter.Name, $"{baseUrl}account/confirmPasswordReset/{token}");
+        var result = await SendEmailAsync(Email.Email, Email.NomeEmail, experimenter.Email, experimenter.Name, $"{baseUrl}account/passwordReset/{token}");
 
         if (!result) return ResultDTO.Result.CouldNotSendEmail;
         else return ResultDTO.Result.Succeeded;

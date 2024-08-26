@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BrewLab.Web.Services;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace BrewLab.Web.Extensions;
 
 public static class NavigationManagerExtensions
 {
-    public static void ToReturnUrl(this NavigationManager manager)
+    public static void ToReturnUrl(this NavigationManager manager, AuthService authService)
     {
         var uri = new Uri(manager.Uri);
 
@@ -19,9 +20,7 @@ public static class NavigationManagerExtensions
 
             manager.NavigateTo($"{parameterValue}");
         }
-        else
-        {
-            return;
-        }
+
+        authService.HasAttemptedAuthentication = true;
     }
 }

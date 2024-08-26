@@ -36,14 +36,15 @@
             return;
         }
 
-        navigation.ToReturnUrl();
+        navigation.ToReturnUrl(authService);
+        StateHasChanged();
     }
 
     private async Task Reinitialize()
     {
         await authService.DeleteTokenLocalStorage();
         authService.HasAttemptedAuthentication = true;
-        navigation.NavigateTo("/account/login");
+        StateHasChanged();
     }
 
 
