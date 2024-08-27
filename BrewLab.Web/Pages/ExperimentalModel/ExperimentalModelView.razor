@@ -9,62 +9,52 @@
 {
     if(ExperimentalModel is not null)
     {
-        <MudForm @ref="Form">
-            <MudStack Row=true Justify="Justify.Center">
-                <MudPaper Width="70%">
-                    <MudStack Justify="Justify.Center" Class="pa-4">
-                        <MudTextField T="string"
-                                      Label="Nome"
-                                      @bind-Value="ExperimentalModel.Name"
-                                      Validation="@((string name) => ExperimentalModelDTO.ValidateName(name))"
-                                      Variant="Variant.Filled"
-                                      ReadOnly="@AType.IsVisualizationOnly()" />
+        <MainForm @ref="Form">
+            <MudTextField T="string"
+                          Label="Nome"
+                          @bind-Value="ExperimentalModel.Name"
+                          Validation="@((string name) => ExperimentalModelDTO.ValidateName(name))"
+                          Variant="Variant.Filled"
+                          ReadOnly="@AType.IsVisualizationOnly()" />
 
-                        <MudTextField T="string"
-                                      Label="Descrição"
-                                      @bind-Value="ExperimentalModel.Description"
-                                      Validation="@((string description) => ExperimentalModelDTO.ValidateDescription(description))"
-                                      Variant="Variant.Filled"
-                                      Lines="5"
-                                      ReadOnly="@AType.IsVisualizationOnly()" />
+            <MudTextField T="string"
+                          Label="Descrição"
+                          @bind-Value="ExperimentalModel.Description"
+                          Validation="@((string description) => ExperimentalModelDTO.ValidateDescription(description))"
+                          Variant="Variant.Filled"
+                          Lines="5"
+                          ReadOnly="@AType.IsVisualizationOnly()" />
 
-                        <MudButton FullWidth="true" Color="Color.Primary" OnClick="OpenDialogAsync" Variant="Variant.Filled">
-                            @(AType.IsVisualizationOnly() ? "Visualizar" : "Editar") modelo
-                        </MudButton>
+            <MudButton FullWidth="true" Color="Color.Primary" OnClick="OpenDialogAsync" Variant="Variant.Filled" Class="mt-2">
+                @(AType.IsVisualizationOnly() ? "Visualizar" : "Editar") modelo
+            </MudButton>
 
-                        <div class="mt-2">
-                            @if (AType == ActionType.Create)
-                            {
-                                <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="RegisterAsync">
-                                    Cadastrar
-                                </MudButton>
-                            }
-                            @if (AType == ActionType.Edit)
-                            {
-                                <MudButton Color="Color.Warning" Variant="Variant.Filled" OnClick="EditAsync">
-                                    Editar
-                                </MudButton>
-                            }
-                            @if (AType == ActionType.Delete)
-                            {
-                                <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="DeleteAsync">
-                                    Deletar
-                                </MudButton>
-                            }
-                        </div>
-
-                    </MudStack>
-                </MudPaper>
-            </MudStack>
-            
-        </MudForm>
+            <div class="mt-2">
+                @if (AType == ActionType.Create)
+                {
+                    <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="RegisterAsync">
+                        Cadastrar
+                    </MudButton>
+                }
+                @if (AType == ActionType.Edit)
+                {
+                    <MudButton Color="Color.Warning" Variant="Variant.Filled" OnClick="EditAsync">
+                        Editar
+                    </MudButton>
+                }
+                @if (AType == ActionType.Delete)
+                {
+                    <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="DeleteAsync">
+                        Deletar
+                    </MudButton>
+                }
+            </div>
+        </MainForm>
         
     }
     else
     {
-        <MudStack Row="true" Justify="Justify.Center">
-            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Class="mt-lg-12" Indeterminate="true" />
-        </MudStack>
+        <Loading />
     }
 }
 else
@@ -79,6 +69,12 @@ else
 
 
 @code {
+    private ActionType AType { get; set; }
+    private ExperimentalModelDTO.View ExperimentalModel { get; set; } = default!;
+    private bool Errored { get; set; } = false;
+    private string Message { get; set; } = "";
+    private MainForm Form { get; set; } = default!;
+
     [Parameter]
     public string Action { get; set; } = "";
     [Parameter]
@@ -86,13 +82,7 @@ else
     [SupplyParameterFromQuery]
     public int? CopyFrom { get; set; } = null;
 
-    private ActionType AType { get; set; }
-    private ExperimentalModelDTO.View ExperimentalModel { get; set; } = default!;
-    private bool Errored { get; set; } = false;
-    private string Message { get; set; } = "";
-    private MudForm Form { get; set; } = default!;
-
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
         if (authService.User is null)
         {
@@ -125,7 +115,7 @@ else
             {
                 ExperimentalModel = new ExperimentalModelDTO.View();
             }
-            
+
             return;
         }
 
@@ -162,11 +152,7 @@ else
 
     private async Task RegisterAsync()
     {
-        if (!Form.IsValid)
-        {
-            await Form.Validate();
-            return;
-        }
+        if (!Form.Validate()) return;
 
         if (authService.User is null)
         {
@@ -192,10 +178,7 @@ else
         }
         else
         {
-            foreach(var error in result.Errors)
-            {
-                snackbar.Add(error, Severity.Error);
-            }
+            Form.AddErrors(result.Errors);
         }
     }
 
@@ -235,11 +218,7 @@ else
 
     private async Task DeleteAsync()
     {
-        if (!Form.IsValid)
-        {
-            await Form.Validate();
-            return;
-        }
+        if (!Form.Validate()) return;
 
         if (authService.User is null)
         {
@@ -257,10 +236,7 @@ else
         }
         else
         {
-            foreach (var error in result.Errors)
-            {
-                snackbar.Add(error, Severity.Error);
-            }
+            Form.AddErrors(result.Errors);
         }
     }
 }

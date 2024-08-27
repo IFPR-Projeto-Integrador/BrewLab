@@ -4,68 +4,59 @@
 @attribute [AllowAnonymous]
 
 
-<MudStack Row="true" Justify="Justify.Center">
-    <MudPaper Width="70%" Class="pa-4">
-        <MudForm @ref="Form" @bind-IsValid="IsValid" Spacing="0">
+<MainForm @ref="Form">
+    <MudTextField T="string"
+                  Label="Login"
+                  @bind-Value="Experimenter.UserName"
+                  Variant="Variant.Filled" />
+    <MudTextField T="string"
+                  Label="Senha"
+                  InputType="InputType.Password"
+                  @bind-Value="Experimenter.Password"
+                  Validation="@((string password) => ExperimenterDTO.ValidatePassword(password))"
+                  Variant="Variant.Filled" />
 
-            <MudTextField T="string"
-                          Label="Login"
-                          @bind-Value="Experimenter.UserName"
-                          Variant="Variant.Filled" />
-            <MudTextField T="string"
-                          Label="Senha"
-                          InputType="InputType.Password"
-                          @bind-Value="Experimenter.Password"
-                          Validation="@((string password) => ExperimenterDTO.ValidatePassword(password))"
-                          Variant="Variant.Filled" />
+    <div class="mb-2">
+        <MudLink Href="/account/passwordResetEmail">Esqueci minha senha</MudLink>
+    </div>
 
-            @foreach (var error in Errors)
-            {
-                <MudText Color="Color.Error">@error</MudText>
-            }
-            <div class="mv-2">
-                <MudLink Href="/account/passwordResetEmail">Esqueci minha senha</MudLink>
-            </div>
-            <div class="mt-4">
-                <MudButton @onclick="LoginAsync"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary">
-                    Login
-                </MudButton>
-            </div>
-            <div class="mt-2">
-                <MudLink Href="/account/register">Ou cadastre-se no lugar.</MudLink>
-            </div>
+    <MudStack Row="true" Class="">
+        <MudButton @onclick="LoginAsync"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary">
+            Login
+        </MudButton>
 
-        </MudForm>
-    </MudPaper>
-</MudStack>
+        <MudSpacer />
+
+        <MudButton @onclick="@(() => navigation.NavigateTo("/account/register"))"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary">
+            Cadastrar
+        </MudButton>
+
+    </MudStack>
+</MainForm>
 
 
 @code {
-    private MudForm Form { get; set; } = default!;
-    private bool IsValid { get; set; }
+    private MainForm Form { get; set; } = default!;
     private ExperimenterDTO.Login Experimenter { get; set; } = new();
-
-    private IEnumerable<string> Errors { get; set; } = [];
 
     private async Task LoginAsync()
     {
-        if (!IsValid)
-        {
-            await Form.Validate();
-            return;
-        }
+        if (!Form.Validate()) return;
 
         var result = await authService.Login(Experimenter);
-
-        Errors = result.Errors;
 
         if (result.Success)
         {
             await authService.SetTokenLocalStorage(result.Token!);
             navigation.NavigateTo("/");
         }
-        
+        else
+        {
+            Form.AddErrors(result.Errors);
+        }
     }
 }

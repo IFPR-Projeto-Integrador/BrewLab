@@ -1,0 +1,10 @@
+﻿<MudStack Row="true" Justify="Justify.Center">
+    <MudProgressCircular Color="Color" Size="Size" Class="mt-lg-12" Indeterminate="true" />
+</MudStack>
+
+@code {
+    [Parameter]
+    public Size Size { get; set; } = Size.Large;
+    [Parameter]
+    public Color Color { get; set; } = Color.Primary;
+}

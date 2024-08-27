@@ -4,9 +4,7 @@
 @inject ISnackbar snackbar
 @attribute [AllowAnonymous]
 
-<MudStack Row="true" Justify="Justify.Center">
-    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Class="mt-lg-12" Indeterminate="true" />
-</MudStack>
+<Loading />
 
 @code {
     protected override async Task OnInitializedAsync()

@@ -11,97 +11,87 @@
 {
     if (ExperimentalPlanning is not null)
     {
-        <MudForm @ref="Form">
-            <MudStack Row=true Justify="Justify.Center">
-                <MudPaper Width="70%">
-                    <MudStack Justify="Justify.Center" Class="pa-4">
-                        <MudTextField T="string"
-                                      Label="Nome"
-                                      @bind-Value="ExperimentalPlanning.Name"
-                                      Validation="@((string name) => ExperimentalPlanningDTO.ValidateName(name))"
-                                      Variant="Variant.Filled"
-                                      ReadOnly="@AType.IsVisualizationOnly()" />
+        <MainForm @ref="Form">
+            <MudTextField T="string"
+                          Label="Nome"
+                          @bind-Value="ExperimentalPlanning.Name"
+                          Validation="@((string name) => ExperimentalPlanningDTO.ValidateName(name))"
+                          Variant="Variant.Filled"
+                          ReadOnly="@AType.IsVisualizationOnly()" />
 
-                        <MudTextField T="string"
-                                      Label="Descrição"
-                                      @bind-Value="ExperimentalPlanning.Description"
-                                      Validation="@((string description) => ExperimentalPlanningDTO.ValidateDescription(description))"
-                                      Variant="Variant.Filled"
-                                      Lines="5"
-                                      ReadOnly="@AType.IsVisualizationOnly()" />
+            <MudTextField T="string"
+                          Label="Descrição"
+                          @bind-Value="ExperimentalPlanning.Description"
+                          Validation="@((string description) => ExperimentalPlanningDTO.ValidateDescription(description))"
+                          Variant="Variant.Filled"
+                          Lines="5"
+                          ReadOnly="@AType.IsVisualizationOnly()" />
 
-                        <MudSelect T="int?"
-                                   Label="Modelo base"
-                                   @bind-Value="ExperimentalPlanning.IdExperimentalModel"
-                                   Required="true"
-                                   RequiredError="Modelo base é obrigatório."
-                                   ReadOnly="@AType.IsVisualizationOnly()">
-                            @foreach (var model in ModelsDisplay)
-                            {
-                                <MudSelectItem T="int?" Value="model.Id">@(model.Id) - @(model.Name)</MudSelectItem>
-                            }       
-                        </MudSelect>
+            <MudSelect T="int?"
+                       Label="Modelo base"
+                       @bind-Value="ExperimentalPlanning.IdExperimentalModel"
+                       Required="true"
+                       RequiredError="Modelo base é obrigatório."
+                       ReadOnly="@AType.IsVisualizationOnly()">
+                @foreach (var model in ModelsDisplay)
+                {
+                    <MudSelectItem T="int?" Value="model.Id">@(model.Id) - @(model.Name)</MudSelectItem>
+                }
+            </MudSelect>
 
-                        <MudStack Row="true">
-                            <MudButton FullWidth="true" Color="Color.Primary" OnClick="OpenDialogAsync" Variant="Variant.Filled"
-                                       Disabled="@(ExperimentalMatrixFile is null && string.IsNullOrWhiteSpace(ExperimentalPlanning.ExperimentalMatrix))">
-                                Visualizar matriz experimental
-                            </MudButton>
-                            <MudFileUpload T="IBrowserFile" FilesChanged="FileChanged"
-                                           Accept=".json"
-                                           Disabled="@(ExperimentalMatrixFile is not null
+            <MudStack Row="true" Class="mt-2">
+                <MudButton FullWidth="true" Color="Color.Primary" OnClick="OpenDialogAsync" Variant="Variant.Filled"
+                           Disabled="@(ExperimentalMatrixFile is null && string.IsNullOrWhiteSpace(ExperimentalPlanning.ExperimentalMatrix))">
+                    Visualizar matriz experimental
+                </MudButton>
+                <MudFileUpload T="IBrowserFile" FilesChanged="FileChanged"
+                               Accept=".json"
+                               Disabled="@(ExperimentalMatrixFile is not null
                                                     || !string.IsNullOrWhiteSpace(ExperimentalPlanning.ExperimentalMatrix)
                                                     || AType.IsVisualizationOnly())">
-                                <ActivatorContent>
-                                    <MudButton Variant="Variant.Filled"
-                                               Color="Color.Success"
-                                               StartIcon="@Icons.Material.Rounded.CloudUpload"
-                                               Disabled="@(ExperimentalMatrixFile is not null 
-                                                    || !string.IsNullOrWhiteSpace(ExperimentalPlanning.ExperimentalMatrix) 
+                    <ActivatorContent>
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Success"
+                                   StartIcon="@Icons.Material.Rounded.CloudUpload"
+                                   Disabled="@(ExperimentalMatrixFile is not null
+                                                    || !string.IsNullOrWhiteSpace(ExperimentalPlanning.ExperimentalMatrix)
                                                     || AType.IsVisualizationOnly())">
-                                               Enviar
-                                    </MudButton>
-                                </ActivatorContent>
-                            </MudFileUpload>
-                            <MudButton Variant="Variant.Filled"
-                                       Color="Color.Error"
-                                       StartIcon="@Icons.Material.Rounded.AttachFile"
-                                       OnClick="async () => await FileChanged(null)"
-                                       Disabled="@(ExperimentalMatrixFile is null 
+                            Enviar
+                        </MudButton>
+                    </ActivatorContent>
+                </MudFileUpload>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Error"
+                           StartIcon="@Icons.Material.Rounded.AttachFile"
+                           OnClick="async () => await FileChanged(null)"
+                           Disabled="@(ExperimentalMatrixFile is null
                                             || string.IsNullOrWhiteSpace(ExperimentalPlanning.ExperimentalMatrix)
                                             || AType.IsVisualizationOnly())">
-                                       Cancelar
-                            </MudButton>
-                        </MudStack>
-                        
-
-                        <div class="mt-2">
-                            @if (AType == ActionType.Create)
-                            {
-                                <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="RegisterAsync">
-                                    Cadastrar
-                                </MudButton>
-                            }
-                            @if (AType == ActionType.Delete)
-                            {
-                                <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="DeleteAsync">
-                                    Deletar
-                                </MudButton>
-                            }
-                        </div>
-
-                    </MudStack>
-                </MudPaper>
+                    Cancelar
+                </MudButton>
             </MudStack>
 
-        </MudForm>
+
+            <div class="mt-2">
+                @if (AType == ActionType.Create)
+                {
+                    <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="RegisterAsync">
+                        Cadastrar
+                    </MudButton>
+                }
+                @if (AType == ActionType.Delete)
+                {
+                    <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="DeleteAsync">
+                        Deletar
+                    </MudButton>
+                }
+            </div>
+        </MainForm>
 
     }
     else
     {
-        <MudStack Row="true" Justify="Justify.Center">
-            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Class="mt-lg-12" Indeterminate="true" />
-        </MudStack>
+        <Loading />
     }
 }
 else
@@ -116,23 +106,23 @@ else
 
 
 @code {
-    [Parameter]
-    public string Action { get; set; } = "";
-    [Parameter]
-    public int Id { get; set; } = 0;
-
     private ActionType AType { get; set; }
     private ExperimentalPlanningDTO.View ExperimentalPlanning { get; set; } = default!;
 
     private bool Errored { get; set; } = false;
     private string Message { get; set; } = "";
-    private MudForm Form { get; set; } = default!;
+    private MainForm Form { get; set; } = default!;
 
     private IEnumerable<ExperimentalModelDTO.View> ModelsDisplay { get; set; } = default!;
 
     private IBrowserFile? ExperimentalMatrixFile { get; set; }
 
-    protected override async Task OnParametersSetAsync()
+    [Parameter]
+    public string Action { get; set; } = "";
+    [Parameter]
+    public int Id { get; set; } = 0;
+
+    protected override async Task OnInitializedAsync()
     {
         if (authService.User is null)
         {
@@ -180,11 +170,7 @@ else
 
     private async Task RegisterAsync()
     {
-        if (!Form.IsValid)
-        {
-            await Form.Validate();
-            return;
-        }
+        if (!Form.Validate()) return;
 
         if (authService.User is null)
         {
@@ -210,10 +196,7 @@ else
         }
         else
         {
-            foreach (var error in result.Errors)
-            {
-                snackbar.Add(error, Severity.Error);
-            }
+            Form.AddErrors(result.Errors);
         }
     }
 
@@ -235,10 +218,7 @@ else
         }
         else
         {
-            foreach (var error in result.Errors)
-            {
-                snackbar.Add(error, Severity.Error);
-            }
+            Form.AddErrors(result.Errors);
         }
     }
 

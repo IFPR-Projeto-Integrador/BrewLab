@@ -99,9 +99,7 @@
     }
     else
     {
-        <MudStack Row="true" Justify="Justify.Center">
-            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Class="mt-lg-12" Indeterminate="true" />
-        </MudStack>
+        <Loading />
     }
 
 </MudPaper>
@@ -111,7 +109,7 @@
     private List<ExperimentalPlanningDTO.ViewWithExperimentalModels>? ExperimentalPlannings { get; set; }
     private bool Loading { get; set; } = true;
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
         Loading = true;
 

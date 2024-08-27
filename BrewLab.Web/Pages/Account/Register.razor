@@ -1,80 +1,73 @@
 ﻿@page "/account/register"
 @inject NavigationManager navigation
 @inject AuthService authService
+@inject ISnackbar snackbar
 @attribute [AllowAnonymous]
 
-<MudStack Row="true" Justify="Justify.Center">
-    <MudPaper Width="70%" Class="pa-4">
-        <MudForm @ref="Form" @bind-IsValid="IsValid" Spacing="0">
-            @foreach (var error in Errors)
-            {
-                <MudText Color="Color.Error" Class="mv-1">@error</MudText>
-            }
+<MainForm @ref="Form">
+    <MudTextField T="string"
+                  Label="Login"
+                  Validation="@((string login) => ExperimenterDTO.ValidateUserName(login))"
+                  @bind-Value="Experimenter.UserName"
+                  Variant="Variant.Filled" />
+    <MudTextField T="string"
+                  Label="Email" Required="true"
+                  InputType="InputType.Email"
+                  @bind-Value="Experimenter.Email"
+                  Validation="@((string email) => ExperimenterDTO.ValidateEmail(email))"
+                  Variant="Variant.Filled" />
+    <MudTextField T="string"
+                  Label="Nome"
+                  Validation="@((string name) => ExperimenterDTO.ValidateName(name))"
+                  @bind-Value="Experimenter.Name"
+                  Variant="Variant.Filled" />
+    <MudTextField T="string"
+                  Label="Senha"
+                  InputType="InputType.Password"
+                  @bind-Value="Experimenter.Password"
+                  Validation="@((string password) => ExperimenterDTO.ValidatePassword(password))"
+                  Variant="Variant.Filled" />
+    <MudTextField T="string"
+                  Label="Senha"
+                  InputType="InputType.Password"
+                  @bind-Value="Experimenter.RepeatPassword"
+                  Validation="@((string repeatPassword) => ExperimenterDTO.ValidateRepeatPassword(Experimenter.Password, repeatPassword))"
+                  Variant="Variant.Filled" />
 
-            <MudTextField T="string"
-                          Label="Login"
-                          Validation="@((string login) => ExperimenterDTO.ValidateUserName(login))"
-                          @bind-Value="Experimenter.UserName"
-                          Variant="Variant.Filled" />
-            <MudTextField T="string"
-                          Label="Email" Required="true"
-                          InputType="InputType.Email"
-                          @bind-Value="Experimenter.Email"
-                          Validation="@((string email) => ExperimenterDTO.ValidateEmail(email))"
-                          Variant="Variant.Filled" />
-            <MudTextField T="string"
-                          Label="Nome"
-                          Validation="@((string name) => ExperimenterDTO.ValidateName(name))"
-                          @bind-Value="Experimenter.Name"
-                          Variant="Variant.Filled" />
-            <MudTextField T="string"
-                          Label="Senha"
-                          InputType="InputType.Password"
-                          @bind-Value="Experimenter.Password"
-                          Validation="@((string password) => ExperimenterDTO.ValidatePassword(password))"
-                          Variant="Variant.Filled" />
-            <MudTextField T="string"
-                          Label="Senha"
-                          InputType="InputType.Password"
-                          @bind-Value="Experimenter.RepeatPassword"
-                          Validation="@((string repeatPassword) => ExperimenterDTO.ValidateRepeatPassword(Experimenter.Password, repeatPassword))"
-                          Variant="Variant.Filled" />
+    <MudStack Class="mt-4" Row="true">
+        <MudButton OnClick="RegisterAsync"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary">Registrar</MudButton>
 
-            <div class="mt-4">
-                <MudButton OnClick="RegisterAsync"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary">Registrar</MudButton>
-            </div>
+        <MudSpacer />
 
-        </MudForm>
-    </MudPaper>
-</MudStack>
+        <MudButton OnClick="@(() => navigation.NavigateTo("/account/login"))"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary">Login</MudButton>
+    </MudStack>
+</MainForm>
 
 
 
 @code {
-    private MudForm Form { get; set; } = default!;
-    private bool IsValid { get; set; }
+    private MainForm Form { get; set; } = default!;
     private ExperimenterDTO.Register Experimenter { get; set; } = new();
-    private IEnumerable<string> Errors { get; set; } = [];
 
-    private async Task RegisterAsync(MouseEventArgs _)
+    private async Task RegisterAsync()
     {
-        if (!Experimenter.Validate())
-        {
-            await Form.Validate();
-            return;
-        }
+        if (!Form.Validate()) return;
 
         var result = await authService.Register(Experimenter);
-
-        Errors = result.Errors;
 
         if (result.Success)
         {
             await authService.SetTokenLocalStorage(result.Token!);
+            snackbar.Add("Conta cadastrada com sucesso!");
             navigation.NavigateTo("/");
         }
-        
+        else
+        {
+            Form.AddErrors(result.Errors);
+        }
     }
 }

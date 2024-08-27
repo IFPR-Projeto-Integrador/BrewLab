@@ -1,0 +1,49 @@
+﻿
+<MudStack Row="true" Justify="Justify.Center">
+    <MudPaper Width="70%" Class="pa-4">
+        <MudForm Spacing="0" @ref="Form">
+            @foreach(var error in Errors)
+            {
+                <MudAlert Severity="Severity.Error" 
+                          ContentAlignment="HorizontalAlignment.Left" 
+                          ShowCloseIcon="true"
+                          Dense="true"
+                          CloseIconClicked="@(() => Errors.Remove(error))">
+                    @error
+                    </MudAlert>
+            }
+
+            @ChildContent
+        </MudForm>
+    </MudPaper>
+</MudStack>
+
+@code {
+    private MudForm Form { get; set; } = default!;
+
+    [Parameter]
+    public List<string> Errors { get; set; } = new List<string>();
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    public bool Validate()
+    {
+        if (!Form.IsValid)
+        {
+            Form.Validate();
+        }
+
+        return Form.IsValid;
+    }
+
+    public void AddErrors(params string[] errors)
+    {
+        Errors.AddRange(errors);
+    }
+
+    public void AddErrors(IEnumerable<string> errors)
+    {
+        Errors.AddRange(errors);
+    }
+}
