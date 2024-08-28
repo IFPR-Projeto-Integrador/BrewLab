@@ -32,6 +32,7 @@ builder.Services.AddHttpClient("EmailClient", client =>
     client.DefaultRequestHeaders.Authorization = 
         new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
 });
+builder.Services.AddScoped<BrewLab.Web.Services.ModalService>();
 builder.Services.AddScoped<PasswordHasher<Experimenter>>();
 builder.Services.AddScoped<ExperimenterService>();
 builder.Services.AddScoped<ExperimentalModelService>();

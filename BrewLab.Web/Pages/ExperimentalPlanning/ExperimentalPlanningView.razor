@@ -2,7 +2,7 @@
 @using System.Text.Json
 @inject ExperimentalPlanningService experimentalPlanningService
 @inject ExperimentalModelService experimentalModelService
-@inject IDialogService dialogService
+@inject ModalService modalService
 @inject ISnackbar snackbar
 @inject NavigationManager navigation
 @inject AuthService authService
@@ -158,14 +158,11 @@ else
 
     private async Task OpenDialogAsync()
     {
-        var parameters = new DialogParameters<PlanningDialog>
-        {
-            { x => x.PlanningJson, ExperimentalPlanning!.ExperimentalMatrix },
-        };
-
-        var options = new DialogOptions() { FullWidth = true, MaxWidth = MaxWidth.Large, CloseOnEscapeKey = true, BackdropClick = true };
-
-        await dialogService.ShowAsync<PlanningDialog>("", parameters, options);
+        await modalService
+            .ViewOnly()
+            .Optional()
+            .ScreenSize()
+            .DisplayViewAsync(ExperimentalPlanning.ExperimentalMatrix, "Matriz");
     }
 
     private async Task RegisterAsync()

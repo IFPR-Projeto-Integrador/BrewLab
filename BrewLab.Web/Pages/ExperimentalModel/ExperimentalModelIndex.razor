@@ -1,7 +1,7 @@
 ﻿@page "/experimentalModel/index"
 @inject ExperimentalModelService experimentalModelService
 @inject AuthService authService
-@inject IDialogService dialogService
+@inject ModalService modalService
 
 <MudPaper Width="100%">
     @if (ExperimentalModels is not null)
@@ -68,14 +68,10 @@
 
     private async Task OpenModelAsync(string model)
     {
-        var parameters = new DialogParameters<ModelDialog>
-        {
-            { x => x.ReadOnly, true },
-            { x => x.Model, model },
-        };
-
-        var options = new DialogOptions() { FullWidth = true, MaxWidth = MaxWidth.Large, CloseOnEscapeKey = true };
-
-        await dialogService.ShowAsync<ModelDialog>("", parameters, options);
+        await modalService
+            .Optional()
+            .ScreenSize()
+            .ViewOnly()
+            .DisplayViewAsync(model, "Modelo");
     }
 }

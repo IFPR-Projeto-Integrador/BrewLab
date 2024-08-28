@@ -1,0 +1,51 @@
+﻿@using System.Text.Json
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h5">
+            Modelo
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (!CanEdit)
+        {
+            <pre>
+                <code style="word-break: break-word;">
+                    @ToDisplay
+                </code>
+            </pre>
+        }
+        else if (CanEdit)
+        {
+            <MudTextField T="string"
+                          spellcheck="false"
+                          Value="@(ToDisplay as string ?? "")"
+                          Variant="Variant.Filled"
+                          Lines="20"
+                          @ref="TextField"/>
+        }
+        
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" FullWidth="true" OnClick="CloseDialogAsync" Variant="Variant.Filled">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter]
+    public required string ToDisplay { get; set; }
+    [Parameter]
+    public required bool CanEdit { get; set; }
+
+    private MudTextField<string> TextField { get; set; } = default!;
+
+    private void CloseDialogAsync()
+    {
+        if (!CanEdit)
+            MudDialog.Close();
+        else
+            MudDialog.Close(DialogResult.Ok(TextField.Text ?? ""));
+    }
+}

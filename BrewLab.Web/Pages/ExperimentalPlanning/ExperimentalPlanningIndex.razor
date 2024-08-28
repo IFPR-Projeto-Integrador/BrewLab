@@ -2,7 +2,7 @@
 @inject ExperimentalPlanningService experimentalPlanningService
 @inject ExperimentService experimentService
 @inject AuthService authService
-@inject IDialogService dialogService
+@inject ModalService modalService
 
 <MudPaper Width="100%">
     @if (ExperimentalPlannings is not null)
@@ -124,14 +124,11 @@
 
     private async Task OpenModelAsync(string planningJson)
     {
-        var parameters = new DialogParameters<PlanningDialog>
-        {
-            { x => x.PlanningJson, planningJson },
-        };
-
-        var options = new DialogOptions() { FullWidth = true, MaxWidth = MaxWidth.Large, CloseOnEscapeKey = true, BackdropClick = true };
-
-        await dialogService.ShowAsync<PlanningDialog>("", parameters, options);
+        await modalService
+            .Optional()
+            .ScreenSize()
+            .ViewOnly()
+            .DisplayViewAsync(planningJson, "Matriz");
     }
 
     private void ShowExperiments(int id)

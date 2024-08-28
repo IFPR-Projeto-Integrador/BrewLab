@@ -1,6 +1,6 @@
 ﻿@page "/experimentalModel/view/{Action}/{Id:int}"
 @inject ExperimentalModelService experimentalModelService
-@inject IDialogService dialogService
+@inject ModalService modalService
 @inject ISnackbar snackbar
 @inject NavigationManager navigation
 @inject AuthService authService
@@ -133,22 +133,15 @@ else
 
     private async Task OpenDialogAsync()
     {
-        var parameters = new DialogParameters<ModelDialog>
-        {
-            { x => x.ReadOnly, AType.IsVisualizationOnly() },
-            { x => x.Model, ExperimentalModel!.Model },
-        };
+        var result = await modalService
+        .CanEdit()
+        .ScreenSize()
+        .Required()
+        .DisplayViewAsync(ExperimentalModel.Model, "Modelo") ?? "";
 
-        var options = new DialogOptions() { FullWidth = true, MaxWidth = MaxWidth.Large, CloseOnEscapeKey = false, BackdropClick = false };
-
-        var dialog = await dialogService.ShowAsync<ModelDialog>("", parameters, options);
-        var result = await dialog.Result;
-
-        if (result is not null && !result.Canceled)
-        {
-            ExperimentalModel.Model = result.Data as string ?? "";
-        }
+        ExperimentalModel.Model = result;
     }
+
 
     private async Task RegisterAsync()
     {
