@@ -3,7 +3,7 @@
 @inject ExperimenterService experimenterService
 @inject NavigationManager navManager
 @inject ISnackbar snackbar
-@inject IDialogService dialogService
+@inject ModalService modalService
 
 @if(CurrentExperimenter is not null)
 {
@@ -123,13 +123,19 @@ else
 
     private async Task DeleteAccountAsync()
     {
-        var parameters = new DialogParameters<AccountDeactivateDialog>
+        var answer = await modalService.ConfirmAsync("Tem certeza que deseja deletar sua conta? Essa ação não pode ser desfeita.", "Deleção de conta");
+        if (authService.User is null || answer is null || !answer.Value) return;
+
+        var result = await experimenterService.DeleteAccountAsync(authService.User.Id, CurrentExperimenter.CurrentPassword);
+
+        if (!result.Success)
         {
-            { x => x.Password, CurrentExperimenter.CurrentPassword },
-        };
-
-        var options = new DialogOptions() { MaxWidth = MaxWidth.Medium, CloseOnEscapeKey = true, BackdropClick = true };
-
-        await dialogService.ShowAsync<AccountDeactivateDialog>("Desativação de conta", parameters, options);
+            snackbar.Add(result.Errors.FirstOrDefault(), Severity.Error);
+        }
+        else
+        {
+            snackbar.Add("Conta deletada com sucesso!", Severity.Success);
+            navManager.NavigateTo("/account/logout");
+        }
     }
 }

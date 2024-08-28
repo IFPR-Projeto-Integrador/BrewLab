@@ -16,6 +16,7 @@ public class ModalService(IDialogService dialogService)
     {
         this.DialogOptions.BackdropClick = false;
         this.DialogOptions.CloseButton = false;
+        this.DialogOptions.CloseOnEscapeKey = false;
 
         return this;
     }
@@ -24,6 +25,7 @@ public class ModalService(IDialogService dialogService)
     {
         this.DialogOptions.BackdropClick = true;
         this.DialogOptions.CloseButton = true;
+        this.DialogOptions.CloseOnEscapeKey = true;
 
         return this;
     }
@@ -65,6 +67,33 @@ public class ModalService(IDialogService dialogService)
             return result.Data as string ?? "";
         else
             return "";
+    }
+
+    public async Task<bool?> ConfirmAsync(string message, string title, bool informativeOnly = false)
+    {
+        var parameters = new DialogParameters<ConfirmationDialog>
+        {
+            { x => x.Informative, informativeOnly },
+            { x => x.Title, title },
+            { x => x.Text, message },
+        };
+
+        var dialogOptions = new DialogOptions()
+        {
+            FullScreen = false,
+            FullWidth = false,
+            MaxWidth = MaxWidth.Medium,
+            BackdropClick = true,
+            CloseButton = true,
+            CloseOnEscapeKey = true,
+
+        };
+
+        var dialog = await dialogService.ShowAsync<ConfirmationDialog>("", parameters, this.DialogOptions);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled) return result.Data as bool?;
+        else return null;
     }
 
 

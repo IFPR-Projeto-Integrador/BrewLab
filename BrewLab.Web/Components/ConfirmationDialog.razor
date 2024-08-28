@@ -1,0 +1,44 @@
+﻿@using System.Text.Json
+@inject AuthService authService
+@inject ExperimenterService experimenterService
+@inject ISnackbar snackbar
+@inject NavigationManager navManager
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h5">
+            @Title
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText>@Text</MudText>
+    </DialogContent>
+    <DialogActions>
+        @if (Informative)
+        {
+            <MudButton Color="Color.Info" FullWidth="true" OnClick="@(() => CloseDialog(null))" Variant="Variant.Filled">Ok</MudButton>
+        }
+        else
+        {
+            <MudButton Color="Color.Success" FullWidth="true" OnClick="@(() => CloseDialog(true))" Variant="Variant.Filled">Sim</MudButton>
+            <MudButton Color="Color.Error" FullWidth="true" OnClick="@(() => CloseDialog(false))" Variant="Variant.Filled">Não</MudButton>
+        }
+        
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter]
+    public string Text { get; set; } = default!;
+    [Parameter]
+    public string Title { get; set; } = default!;
+    [Parameter]
+    public bool Informative { get; set; } = default!;
+
+    private void CloseDialog(bool? answer)
+    {
+        MudDialog.Close(DialogResult.Ok(answer));
+    }
+}
