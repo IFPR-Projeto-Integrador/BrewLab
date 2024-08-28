@@ -5,63 +5,53 @@
 @inject NavigationManager navigation
 @inject AuthService authService
 
-@if (!Errored)
+@if(ExperimentalModel is null)
 {
-    if(ExperimentalModel is not null)
-    {
-        <MainForm @ref="Form">
-            <MudTextField T="string"
-                          Label="Nome"
-                          @bind-Value="ExperimentalModel.Name"
-                          Validation="@((string name) => ExperimentalModelDTO.ValidateName(name))"
-                          Variant="Variant.Filled"
-                          ReadOnly="@AType.IsVisualizationOnly()" />
-
-            <MudTextField T="string"
-                          Label="Descrição"
-                          @bind-Value="ExperimentalModel.Description"
-                          Validation="@((string description) => ExperimentalModelDTO.ValidateDescription(description))"
-                          Variant="Variant.Filled"
-                          Lines="5"
-                          ReadOnly="@AType.IsVisualizationOnly()" />
-
-            <MudButton FullWidth="true" Color="Color.Primary" OnClick="OpenDialogAsync" Variant="Variant.Filled" Class="mt-2">
-                @(AType.IsVisualizationOnly() ? "Visualizar" : "Editar") modelo
-            </MudButton>
-
-            <div class="mt-2">
-                @if (AType == ActionType.Create)
-                {
-                    <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="RegisterAsync">
-                        Cadastrar
-                    </MudButton>
-                }
-                @if (AType == ActionType.Edit)
-                {
-                    <MudButton Color="Color.Warning" Variant="Variant.Filled" OnClick="EditAsync">
-                        Editar
-                    </MudButton>
-                }
-                @if (AType == ActionType.Delete)
-                {
-                    <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="DeleteAsync">
-                        Deletar
-                    </MudButton>
-                }
-            </div>
-        </MainForm>
-        
-    }
-    else
-    {
-        <Loading />
-    }
+    <Loading />
 }
 else
 {
-    <MudStack Row="true" Justify="Justify.Center">
-        <MudText>@Message</MudText>
-    </MudStack>
+    <MainForm @ref="Form">
+        <MudTextField T="string"
+                      Label="Nome"
+                      @bind-Value="ExperimentalModel.Name"
+                      Validation="@((string name) => ExperimentalModelDTO.ValidateName(name))"
+                      Variant="Variant.Filled"
+                      ReadOnly="@AType.IsVisualizationOnly()" />
+
+        <MudTextField T="string"
+                      Label="Descrição"
+                      @bind-Value="ExperimentalModel.Description"
+                      Validation="@((string description) => ExperimentalModelDTO.ValidateDescription(description))"
+                      Variant="Variant.Filled"
+                      Lines="5"
+                      ReadOnly="@AType.IsVisualizationOnly()" />
+
+        <MudButton FullWidth="true" Color="Color.Primary" OnClick="OpenDialogAsync" Variant="Variant.Filled" Class="mt-2">
+            @(AType.IsVisualizationOnly() ? "Visualizar" : "Editar") modelo
+        </MudButton>
+
+        <div class="mt-2">
+            @if (AType == ActionType.Create)
+            {
+                <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="RegisterAsync">
+                    Cadastrar
+                </MudButton>
+            }
+            @if (AType == ActionType.Edit)
+            {
+                <MudButton Color="Color.Warning" Variant="Variant.Filled" OnClick="EditAsync">
+                    Editar
+                </MudButton>
+            }
+            @if (AType == ActionType.Delete)
+            {
+                <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="DeleteAsync">
+                    Deletar
+                </MudButton>
+            }
+        </div>
+    </MainForm>
 }
 
 
@@ -71,8 +61,6 @@ else
 @code {
     private ActionType AType { get; set; }
     private ExperimentalModelDTO.View ExperimentalModel { get; set; } = default!;
-    private bool Errored { get; set; } = false;
-    private string Message { get; set; } = "";
     private MainForm Form { get; set; } = default!;
 
     [Parameter]
@@ -84,13 +72,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        if (authService.User is null)
-        {
-            Errored = true;
-            Message = "Você não está mais logado. Por favor recarregue a página.";
-            return;
-        }
-
         AType = Action.ToActionType();
 
         if (AType == ActionType.Create)
@@ -99,7 +80,7 @@ else
             {
                 Id = CopyFrom.Value;
 
-                var queryExperimentalModel = await experimentalModelService.GetExperimentalModelById(Id, authService.User.Id);
+                var queryExperimentalModel = await experimentalModelService.GetExperimentalModelById(Id, authService.User!.Id);
 
                 if (queryExperimentalModel is not null)
                 {
@@ -108,7 +89,8 @@ else
                 else
                 {
                     snackbar.Add("Modelo para cópia é inválido ou não existe.", Severity.Error);
-                    ExperimentalModel = new ExperimentalModelDTO.View();
+                    navigation.NavigateTo("/experimentalModel/index");
+                    return;
                 }
             }
             else
@@ -119,12 +101,12 @@ else
             return;
         }
 
-        var experimentalModel = await experimentalModelService.GetExperimentalModelById(Id, authService.User.Id);
+        var experimentalModel = await experimentalModelService.GetExperimentalModelById(Id, authService.User!.Id);
 
         if (experimentalModel is null)
         {
-            Errored = true;
-            Message = "Modelo experimental não encontrado.";
+            snackbar.Add("Modelo experimental não encontrado.", Severity.Error);
+            navigation.NavigateTo("/experimentalModel/index");
             return;
         }
 
@@ -158,19 +140,12 @@ else
     {
         if (!Form.Validate()) return;
 
-        if (authService.User is null)
-        {
-            Errored = true;
-            Message = "Você não está mais logado. Por favor recarregue a página.";
-            return;
-        }
-
         var toCreate = new ExperimentalModelDTO.Create
         {
             Name = ExperimentalModel.Name,
             Model = ExperimentalModel.Model,
             Description = ExperimentalModel.Description,
-            ExperimenterId = authService.User.Id
+            ExperimenterId = authService.User!.Id
         };
 
         var result = await experimentalModelService.CreateExperimentalModel(toCreate);
@@ -188,20 +163,13 @@ else
 
     private async Task EditAsync()
     {
-        if (authService.User is null)
-        {
-            Errored = true;
-            Message = "Você não está mais logado. Por favor recarregue a página.";
-            return;
-        }
-
         var toEdit = new ExperimentalModelDTO.Edit
             {
                 Id = ExperimentalModel.Id,
                 Name = ExperimentalModel.Name,
                 Model = ExperimentalModel.Model,
                 Description = ExperimentalModel.Description,
-                ExperimenterId = authService.User.Id
+                ExperimenterId = authService.User!.Id
             };
 
         var result = await experimentalModelService.EditExperimentalModel(toEdit);
@@ -213,10 +181,7 @@ else
         }
         else
         {
-            foreach (var error in result.Errors)
-            {
-                snackbar.Add(error, Severity.Error);
-            }
+            Form.AddErrors(result.Errors);
         }
     }
 
@@ -224,14 +189,7 @@ else
     {
         if (!Form.Validate()) return;
 
-        if (authService.User is null)
-        {
-            Errored = true;
-            Message = "Você não está mais logado. Por favor recarregue a página.";
-            return;
-        }
-
-        var result = await experimentalModelService.DeleteExperimentalModel(Id, authService.User.Id);
+        var result = await experimentalModelService.DeleteExperimentalModel(Id, authService.User!.Id);
 
         if (result.Success)
         {
