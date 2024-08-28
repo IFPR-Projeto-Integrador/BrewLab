@@ -133,6 +133,17 @@ else
 
     private async Task OpenDialogAsync()
     {
+        if (AType.IsVisualizationOnly())
+        {
+            await modalService
+                .ViewOnly()
+                .ScreenSize()
+                .Optional()
+                .DisplayViewAsync(ExperimentalModel.Model, "Modelo");
+
+            return;
+        }
+
         var result = await modalService
         .CanEdit()
         .ScreenSize()
