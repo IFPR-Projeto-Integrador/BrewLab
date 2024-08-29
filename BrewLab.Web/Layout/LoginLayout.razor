@@ -7,8 +7,14 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <div style="display: flex; flex-direction: column; justify-content: center; align-content: center; height: 100%;">
-        @Body
-    </div>
-        
+    <MudMainContent Style="display: flex; flex-direction: column; justify-content: center; align-content: center; height: 100%; padding-top: 0;">
+        @if (authService.HasAttemptedAuthentication)
+        {
+            @Body
+        }
+        else
+        {
+            <Loading />
+        }
+    </MudMainContent>
 </MudLayout>
