@@ -1,10 +1,11 @@
 ﻿@page "/account/register"
+@layout LoginLayout
 @inject NavigationManager navigation
 @inject AuthService authService
 @inject ISnackbar snackbar
 @attribute [AllowAnonymous]
 
-<MainForm @ref="Form">
+<MainForm @ref="Form" Width="20%">
     <MudTextField T="string"
                   Label="Login"
                   Validation="@((string login) => ExperimenterDTO.ValidateUserName(login))"
@@ -37,14 +38,13 @@
     <MudStack Class="mt-4" Row="true">
         <MudButton OnClick="RegisterAsync"
                    Variant="Variant.Filled"
-                   Color="Color.Primary">Registrar</MudButton>
-
-        <MudSpacer />
-
-        <MudButton OnClick="@(() => navigation.NavigateTo("/account/login"))"
-                   Variant="Variant.Filled"
-                   Color="Color.Primary">Login</MudButton>
+                   Color="Color.Primary" 
+                   FullWidth="true">Registrar</MudButton>
     </MudStack>
+
+    <div class="mt-3">
+        <MudLink Href="/account/login">Faça login no lugar</MudLink>
+    </div>
 </MainForm>
 
 

@@ -1,10 +1,11 @@
 ﻿@page "/account/login"
+@layout LoginLayout
 @inject AuthService authService
 @inject NavigationManager navigation
 @attribute [AllowAnonymous]
 
 
-<MainForm @ref="Form">
+<MainForm @ref="Form" Width="20%">
     <MudTextField T="string"
                   Label="Login"
                   @bind-Value="Experimenter.UserName"
@@ -16,26 +17,24 @@
                   Validation="@((string password) => ExperimenterDTO.ValidatePassword(password))"
                   Variant="Variant.Filled" />
 
-    <div class="mb-2">
+    <div class="mb-3 mt-3">
         <MudLink Href="/account/passwordResetEmail">Esqueci minha senha</MudLink>
     </div>
 
-    <MudStack Row="true" Class="">
-        <MudButton @onclick="LoginAsync"
-                   Variant="Variant.Filled"
-                   Color="Color.Primary">
-            Login
-        </MudButton>
+    
+    <MudButton @onclick="LoginAsync"
+                Variant="Variant.Filled"
+                Color="Color.Primary">
+        Login
+    </MudButton>
 
-        <MudSpacer />
+    <MudText Style="text-align: center;" GutterBottom="true" Class="mt-3 mb-3">Ou</MudText>
 
-        <MudButton @onclick="@(() => navigation.NavigateTo("/account/register"))"
-                   Variant="Variant.Filled"
-                   Color="Color.Primary">
-            Cadastrar
-        </MudButton>
-
-    </MudStack>
+    <MudButton @onclick="@(() => navigation.NavigateTo("/account/register"))"
+                Variant="Variant.Filled"
+                Color="Color.Primary">
+        Cadastrar
+    </MudButton>
 </MainForm>
 
 
