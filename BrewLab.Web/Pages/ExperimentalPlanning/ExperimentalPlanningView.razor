@@ -194,6 +194,12 @@ else
             ExperimentalPlanning.ExperimentalMatrix = "";
             return;    
         }
+        if (ExperimentalMatrixFile.Size > 512000)
+        {
+            Form.AddErrors(["O tamanho do arquivo não pode exceder 512kb."]);
+            ExperimentalMatrixFile = null;
+            return;
+        }
 
         var stream = ExperimentalMatrixFile.OpenReadStream();
         using var ms = new StreamReader(stream);
