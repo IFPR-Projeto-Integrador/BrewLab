@@ -27,7 +27,7 @@
                 <MudTd DataLabel="Matriz experimental">
                     <MudButton Variant="Variant.Text"
                                Color="Color.Info"
-                               OnClick="@(() => OpenModelAsync(@context.ExperimentalMatrix))">Visualizar matriz experimental</MudButton>
+                               OnClick="@(() => OpenModelAsync(@context.ExperimentalMatrix))">Visualizar planejamento experimental</MudButton>
                 </MudTd>
                 <MudTd>
                     @if (context.Experiments is null || context.Experiments?.Count() == 0)
