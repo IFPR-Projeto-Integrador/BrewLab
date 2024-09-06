@@ -3,6 +3,7 @@
 @inject ExperimentService experimentService
 @inject AuthService authService
 @inject ModalService modalService
+@inject ISnackbar snackbar
 
 <MudPaper Width="100%">
     @if (ExperimentalPlannings is not null)
@@ -146,7 +147,11 @@
 
         var resultExperiment = await experimentService.Create(experimentalPlanningId, authService.User.Id);
 
-        if (!resultExperiment.Success) return;
+        if (!resultExperiment.Success)
+        {
+            snackbar.Add(resultExperiment.Errors.FirstOrDefault(), Severity.Error);
+            return;
+        }
 
         var planning = await experimentalPlanningService.GetExperimentalPlanningById(experimentalPlanningId, authService.User.Id);
 
