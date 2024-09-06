@@ -8,13 +8,60 @@
 
 <MudLayout>
     <MudAppBar Elevation="2">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerOpen = !DrawerOpen)" />
-        <MudText Typo="Typo.h5" Class="ml-3">BrewLab @(authService.User is not null ? $"| {authService.User.UserName}" : "")</MudText>
+        <MudIconButton Icon="@Icons.Material.Outlined.Home" Size="Size.Large" Color="Color.Primary" Edge="Edge.Start" Href="/" />
+        <MudText Typo="Typo.h5" Class="ml-3" Color="Color.Primary">BrewLab Client</MudText>
+        <MudSpacer />
+
+        <MudIconButton Icon="@Icons.Material.Outlined.List" Color="Color.Primary" Href="/experimentalModel/index" />
+        <MudText Typo="Typo.h6">Modelos</MudText>
+        <MudIconButton Icon="@Icons.Material.Outlined.Add" Color="Color.Primary" Href="/experimentalModel/view/create/0" />
+
+        <MudIconButton Icon="@Icons.Material.Outlined.List" Color="Color.Primary" Href="/experimentalPlanning/index" />
+        <MudText Typo="Typo.h6">Planejamentos</MudText>
+        <MudIconButton Icon="@Icons.Material.Outlined.Add" Color="Color.Primary" Href="/experimentalPlanning/view/create/0" />
+
+
         <MudSpacer />
         <AuthorizeView>
             <Authorized>
-                <MudIconButton Icon="@Icons.Material.Outlined.Person" Size="Size.Large" Class="mr-2" Href="/account/view" Color="Color.Primary" />
-                <MudLink Href="/account/logout">Logout</MudLink>
+                <span>
+                    <div class="d-flex flex-row" style="flex-wrap: wrap; align-items: center;">
+                        <MudToggleIconButton Icon="@Icons.Material.Outlined.Person"
+                                             ToggledIcon="@Icons.Material.Filled.Person"
+                                             Size="Size.Large"
+                                             Class="mr-2"
+                                             @bind-Toggled="AccountPopover"
+                                             Color="Color.Primary">
+                        </MudToggleIconButton>
+
+                        <MudText 
+                                Color="Color.Primary" 
+                                @onclick="@(() => this.AccountPopover = !this.AccountPopover)" 
+                                Style="cursor: pointer;">
+                            @authService.User?.UserName
+                        </MudText>
+                    </div>
+                    
+                    
+
+                    <MudPopover 
+                            Open="AccountPopover" 
+                            Fixed="false"
+                            AnchorOrigin="Origin.BottomCenter" 
+                            OverflowBehavior="OverflowBehavior.FlipOnOpen">
+
+
+                        <MudList T="string">
+                            <MudListItem Href="/account/view">
+                                <MudLink Href="/account/view">Conta</MudLink>
+                            </MudListItem>
+                            <MudDivider />
+                            <MudListItem Href="/account/logout">
+                                <MudLink Href="/account/logout">Logout</MudLink>
+                            </MudListItem>
+                        </MudList>
+                    </MudPopover>
+                </span>
             </Authorized>
             <NotAuthorized>
                 <MudLink Href="/account/login">Login</MudLink>
@@ -22,15 +69,18 @@
         </AuthorizeView>
     </MudAppBar>
 
-    <MudDrawer @bind-Open="DrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+    
+
+    @* <MudDrawer @bind-Open="DrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <MudDrawerHeader>
             <MudText Typo="Typo.h6">Navegar</MudText>
         </MudDrawerHeader>
         <NavMenu />
-    </MudDrawer>
+    </MudDrawer> *@
     
 
     <MudMainContent>
+        
         @if(authService.HasAttemptedAuthentication)
         {
             <div class="ma-3">
@@ -47,4 +97,5 @@
 
 @code {
     private bool DrawerOpen { get; set; } = true;
+    private bool AccountPopover { get; set; } = false;
 }
