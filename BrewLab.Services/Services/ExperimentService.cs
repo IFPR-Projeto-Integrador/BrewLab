@@ -59,11 +59,10 @@ public class ExperimentService(
         if (json is null) return null;
 
         var jsonArray = json as JsonArray;
+
         if (jsonArray is null) return null;
 
         var endResult = new List<string>();
-
-        if (jsonArray is null) return null;
 
         foreach (var arrayElement in jsonArray)
         {
