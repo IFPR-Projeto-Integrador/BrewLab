@@ -1,3 +1,20 @@
 ﻿@page "/"
 
 <PageTitle>Home</PageTitle>
+
+<MudCarousel Class="mud-width-full" ShowArrows="true" ShowBullets="true" TData="object" AutoCycleTime="new TimeSpan(0, 0, 10)" Style="height: 85vh;">
+    @foreach (string link in links)
+    {
+        <MudCarouselItem Style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
+            <div style="width: 50vw; height: 28.125vh; display: flex; flex-direction: row; justify-content: center; align-items: center;">
+                <MudImage Src="@link" Class="rounded-lg" Fluid="true" ObjectFit="ObjectFit.Fill" />
+            </div>
+        </MudCarouselItem>
+    }
+</MudCarousel>
+
+@code {
+    private List<string> links = [
+            "/images/slide_1.png", "/images/slide_2.png", "/images/slide_3.png", "/images/slide_4.png", "/images/slide_5.png", "/images/slide_6.png", "/images/slide_7.png"
+        ];
+}
