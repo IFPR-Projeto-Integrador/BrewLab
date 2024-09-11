@@ -8,24 +8,25 @@
 <MudPaper Width="100%">
     @if (ExperimentalPlannings is not null)
     {
-        <MudTable Items="@ExperimentalPlannings"
-                  Hover="true"
-                  Breakpoint="Breakpoint.Sm"
-                  Loading="@Loading"
-                  LoadingProgressColor="Color.Info"
-                  Filter="new Func<ExperimentalPlanningDTO.ViewWithExperimentalModels, bool>(FilterWrapper)">
+        <MudTable     Items="@ExperimentalPlannings" 
+                      AllowUnsorted="true"
+                      Hover="true"
+                      Breakpoint="Breakpoint.Sm"
+                      Loading="@Loading"
+                      LoadingProgressColor="Color.Info"
+                      Filter="new Func<ExperimentalPlanningDTO.ViewWithExperimentalModels, bool>(FilterWrapper)">
             <ToolBarContent>
                 <MudText Typo="Typo.h6">Planejamentos Experimentais</MudText>
                 <MudSpacer />
                 <MudTextField @bind-Value="SearchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
             </ToolBarContent>
             <HeaderContent>
-                <MudTh><b>Id</b></MudTh>
-                <MudTh><b>Nome</b></MudTh>
-                <MudTh><b>Matriz experimental</b></MudTh>
-                <MudTh><b>Experimentos</b></MudTh>
-                <MudTh><b>Modelo base</b></MudTh>
-                <MudTh><b>Descrição</b></MudTh>
+                <MudTh><MudTableSortLabel SortBy="(ExperimentalPlanningDTO.ViewWithExperimentalModels x) => x.Id"><b>Id</b></MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="(ExperimentalPlanningDTO.ViewWithExperimentalModels x) => x.Name"><b>Nome</b></MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="(ExperimentalPlanningDTO.ViewWithExperimentalModels x) => x.ExperimentalMatrix"><b>Planejamento experimental</b></MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="@((ExperimentalPlanningDTO.ViewWithExperimentalModels x) => x.Experiments?.Count() ?? 0)"><b>Experimentos</b></MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="@((ExperimentalPlanningDTO.ViewWithExperimentalModels x) => x.ExperimentalModel?.Name ?? "")"><b>Modelo base</b></MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="(ExperimentalPlanningDTO.ViewWithExperimentalModels x) => x.Description"><b>Descrição</b></MudTableSortLabel></MudTh>
                 <MudTh Style="text-align: center; width: 10%"><b>Ações</b></MudTh>
             </HeaderContent>
             <RowTemplate>
