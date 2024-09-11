@@ -10,7 +10,13 @@
             Hover="true" 
             Breakpoint="Breakpoint.Sm" 
             Loading="@Loading" 
-            LoadingProgressColor="Color.Info">
+            LoadingProgressColor="Color.Info"
+            Filter="new Func<ExperimentalModelDTO.View, bool>(FilterWrapper)">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Modelos Experimentais</MudText>
+                <MudSpacer />
+                <MudTextField @bind-Value="SearchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
             <HeaderContent>
                 <MudTh><b>Id</b></MudTh>
                 <MudTh><b>Nome</b></MudTh>
@@ -41,6 +47,9 @@
                     </MudMenu>
                 </MudTd>
             </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
         </MudTable>
     }
     else
@@ -54,6 +63,7 @@
 
     private IEnumerable<ExperimentalModelDTO.View>? ExperimentalModels { get; set; }
     private bool Loading { get; set; } = true;
+    private string SearchString { get; set; } = "";
 
     protected override void OnParametersSet()
     {
@@ -73,5 +83,18 @@
             .ScreenSize()
             .ViewOnly()
             .DisplayViewAsync(model, "Modelo");
+    }
+
+    private bool FilterWrapper(ExperimentalModelDTO.View view) => Filter(view, SearchString);
+
+    private bool Filter(ExperimentalModelDTO.View view, string searchString)
+    {
+        if (view is null) return false;
+        if (string.IsNullOrWhiteSpace(searchString)) return true;
+        if (view.Name.Contains(SearchString)) return true;
+        if (view.Model.Contains(SearchString)) return true;
+        if (view.Description.Contains(SearchString)) return true;
+
+        return false;
     }
 }

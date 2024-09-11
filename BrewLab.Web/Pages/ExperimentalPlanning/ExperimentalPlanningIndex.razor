@@ -12,7 +12,13 @@
                   Hover="true"
                   Breakpoint="Breakpoint.Sm"
                   Loading="@Loading"
-                  LoadingProgressColor="Color.Info">
+                  LoadingProgressColor="Color.Info"
+                  Filter="new Func<ExperimentalPlanningDTO.ViewWithExperimentalModels, bool>(FilterWrapper)">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Planejamentos Experimentais</MudText>
+                <MudSpacer />
+                <MudTextField @bind-Value="SearchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
             <HeaderContent>
                 <MudTh><b>Id</b></MudTh>
                 <MudTh><b>Nome</b></MudTh>
@@ -109,6 +115,7 @@
 
     private List<ExperimentalPlanningDTO.ViewWithExperimentalModels>? ExperimentalPlannings { get; set; }
     private bool Loading { get; set; } = true;
+    private string SearchString { get; set; } = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -160,5 +167,19 @@
         var elementIndex = ExperimentalPlannings.FindIndex(e => e.Id == planning.Id);
 
         ExperimentalPlannings[elementIndex] = planning;
+    }
+
+    private bool FilterWrapper(ExperimentalPlanningDTO.ViewWithExperimentalModels view) => Filter(view, SearchString);
+
+    private bool Filter(ExperimentalPlanningDTO.ViewWithExperimentalModels view, string searchString)
+    {
+        if (view is null) return false;
+        if (string.IsNullOrWhiteSpace(searchString)) return true;
+        if (view.Name.Contains(SearchString)) return true;
+        if (view.ExperimentalMatrix.Contains(SearchString)) return true;
+        if (view.Description.Contains(SearchString)) return true;
+        if (view.ExperimentalModel?.Name.Contains(SearchString) ?? false) return true;
+
+        return false;
     }
 }
