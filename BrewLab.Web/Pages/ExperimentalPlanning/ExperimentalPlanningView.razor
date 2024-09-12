@@ -46,7 +46,7 @@ else
         <MudStack Row="true" Class="mt-2">
             <MudButton FullWidth="true" Color="Color.Primary" OnClick="OpenDialogAsync" Variant="Variant.Filled"
                        Disabled="@(ExperimentalMatrixFile is null && string.IsNullOrWhiteSpace(ExperimentalPlanning.ExperimentalMatrix))">
-                Visualizar matriz experimental
+                Visualizar planejamento experimental
             </MudButton>
             <MudFileUpload T="IBrowserFile" FilesChanged="FileChanged"
                            Accept=".json"
