@@ -130,13 +130,20 @@ public class ExperimenterService(
         var nameAndId = new ExperimenterDTO.NameAndId()
         { Id = experimenterModel.Id, UserName = experimenterModel.UserName };
 
-        return new ResultDTO.Auth
+        var returnVal = new ResultDTO.Auth
         {
             Success = result.Succeeded,
             Errors = result.Errors.Select(e => e.Description),
             Token = Token.GenerateToken(nameAndId),
             Experimenter = nameAndId
         };
+
+        if (returnVal.Errors.Any(e => e.Contains("already taken")))
+        {
+            returnVal.Errors = ["Nome de usuário já existe."];
+        }
+
+        return returnVal;
     }
 
     public async Task<ResultDTO.Result> RedefinePasswordAsync(string newPassword, string newPasswordRepeat, int experimenterId)

@@ -1,4 +1,6 @@
-﻿namespace BrewLab.Common.DTOs;
+﻿using System.Text.RegularExpressions;
+
+namespace BrewLab.Common.DTOs;
 
 public static class ExperimenterDTO
 {
@@ -85,16 +87,16 @@ public static class ExperimenterDTO
     {
         if (string.IsNullOrWhiteSpace(password)) yield return "A senha é obrigatória.";
 
-        if (password.Length < 8)
-            yield return "A senha precisa conter no mínimo 8 caractéres.";
+        if (Regex.IsMatch(password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$") == false) yield return "A senha precisa conter no mínimo: 8 caracteres, 1 letra maiúscula, 1 letra minúscula, 1 número e 1 caractere especial.";
     }
 
     public static IEnumerable<string> ValidateRepeatPassword(string password, string repeatPassword)
     {
         if (string.IsNullOrWhiteSpace(repeatPassword)) yield return "Repita a senha.";
 
-        if (!password.Equals(repeatPassword))
-            yield return "As senhas não são iguais.";
+        if (!password.Equals(repeatPassword)) yield return "As senhas não são iguais.";
+
+        if (Regex.IsMatch(repeatPassword, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$") == false) yield return "A senha precisa conter no mínimo: 8 caracteres, 1 letra maiúscula, 1 letra minúscula, 1 número e 1 caractere especial.";
     }
 
     public static IEnumerable<string> ValidateEmail(string email)
