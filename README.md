@@ -1,4 +1,11 @@
-# Iniciando o projeto
+# BrewLab Client
+O BrewLab Client é um projeto de aplicação web desenvolvido utilizando a linguagem C#, para a matéria de "Projeto Integrador" da minha faculdade: IFPR, Foz do Iguaçu.
+
+## Documentação
+Clique [aqui](https://docs.google.com/document/d/1Ve25i3PCqjK1yN-fC3WacH4q0AHuClMiPfqZZ7QEYm4/edit?usp=sharing) para acessar a documentação do projeto, no google docs.
+
+## Instalação
+Veja a seguir para um passo a passo de como rodar o projeto em sua máquina.
 
 ### 1 - Baixe o Visual Studio (Windows)
 
